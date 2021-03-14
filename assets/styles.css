@@ -186,7 +186,7 @@ li {
 }
 .all-tabs {
   text-align:left;
-  font-size: 24px;
+  font-size: 29px;
   margin-top: 10px;
 }
 .main-title {
@@ -253,11 +253,12 @@ a:active {
   border-top-style: none;
   border-right-style: none;
   padding: 5px 10px;
+  font-size:  29px;;
 }
 
 .rowrow {
   margin: auto;
-  text-align: center;
+  text-align: left;
   width: 97%;
 }
 

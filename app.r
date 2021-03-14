@@ -27,7 +27,7 @@ get_header <- function() {
   header = htmlDiv(list(
     htmlDiv(
       list(
-        htmlDiv(htmlH2("WineVision Dashboard"),
+        htmlDiv(htmlP("WineVision Dashboard"),
           className = "seven columns main-title"),
             htmlDiv(list(
                   dccLink("Learn more",
@@ -49,7 +49,7 @@ get_menu<-function(){
       dccLink(
         "Wine Type Comparison",
         href="/WineVision/Wine-Types",
-        className="tab"
+        className="tab first"
       ),
       dccLink(
         "Quality Factors",
@@ -57,7 +57,7 @@ get_menu<-function(){
         className="tab ",
       )
     ),
-    className="row all-tabs"
+    className="rowrow alltab "
   )
   return(menu)
 }
