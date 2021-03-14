@@ -12,9 +12,9 @@ library(dashCoreComponents)
 library(ggplot2)
 library(plotly)
 
-########################################################
+#############################################
 ## APP AND FUNCTIONAL APP OBJECTS
-########################################################
+#############################################
 
 app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
 
@@ -41,37 +41,34 @@ get_header <- function() {
       ),
     className = "row"
     )
-  
   return(header)
-  
-}
+  }
 
 
 get_menu <- function() {
-  menu = htmlDiv(list(
-    dccLink(
-      "Red/White Wine Comparison",
-      href="/WineVision/Wine-Types",
-      className="tab first"),
-    dccLink(
-      "Quality Factor Analysis",
-      href="/WineVision/Quality-Factors",
-      className="tab ")
-    ),
+  menu = htmlDiv(
+    list(
+      dccLink(
+        "Red/White Wine Comparison",
+        href="/WineVision/Wine-Types",
+        className="tab first"),
+      dccLink(
+        "Quality Factor Analysis",
+        href="/WineVision/Quality-Factors",
+        className="tab ")
+      ),
     className="rowrow alltab "
-  )
+    )
   return(menu)
-}
-
+  }
 
 Header <- htmlDiv(list(get_header(), htmlBr(), get_menu()))
 
-
 Menu <- htmlDiv(list(get_menu()))
 
-########################################################
+#############################################
 ## APP LAYOUT
-########################################################
+#############################################
 
 app$layout(
   htmlDiv(
@@ -84,6 +81,25 @@ app$layout(
     )
   )
 
+#################################
+## Quality Factor Analysis Page
+
+Quality_Factors_layout <- htmlDiv(
+  list(
+    Header,
+    htmlDiv(
+      list(
+        htmlBr(),
+        htmlBr()
+      ),
+      className = "twelve columns"
+    )
+  )
+)
+
+################################
+## Wine Type Comparison Page
+
 Wine_Types_layout <- htmlDiv(
   list(
     Header,
@@ -95,6 +111,9 @@ Wine_Types_layout <- htmlDiv(
       className = "twelve columns")
     )
   )
+
+################################
+## Learn More Page
 
 learn_more_layout <- htmlDiv(
   list(
@@ -184,24 +203,9 @@ learn_more_layout <- htmlDiv(
 ))))
 
 
-
-Quality_Factors_layout <- htmlDiv(
-  list(
-    Header,
-    htmlDiv(
-      list(
-        htmlBr(),
-        htmlBr()
-        ),
-      className = "twelve columns"
-      )
-    )
-  )
-
-
-########################################################
+#############################################
 ## APP PAGE CALLBACKS
-########################################################
+#############################################
 
 app$callback(output = list(id='page-content', property = 'children'),
              params = list(input(id='url', property = 'pathname')),
@@ -221,9 +225,9 @@ app$callback(output = list(id='page-content', property = 'children'),
              }
 )
 
-########################################################
+#############################################
 ## RUN APP
-########################################################
+#############################################
 
 app$run_server(debug = T)
 
