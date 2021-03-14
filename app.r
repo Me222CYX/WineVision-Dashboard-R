@@ -14,48 +14,45 @@ app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.c
 
 
 
-colors <- list(
-  background = 'white',
-  text = 'black'
-)
+colors <- list(background = 'white', text = 'black')
 
-pageTitle <- htmlH1('Wine Vision',
-                    style = list(textAlign = 'left',
-                                 color = colors$text))
+pageTitle <- htmlH1('Wine Vision', style = list(textAlign = 'left', color = colors$text))
 
 get_header <- function() {
-  header = htmlDiv(list(
-    htmlDiv(
-      list(
-        htmlDiv(htmlP("WineVision Dashboard"),
-          className = "seven columns main-title"),
-            htmlDiv(list(
-                  dccLink("Learn more",
-                  href = "/WineVision/learn-more",
-                  className = "learn-more-button")
-    ),
-    className = "twelve columns")
-  ),
-  className = "twelve columns")),
-  className = "row")
+  header = htmlDiv(
+    list(
+      htmlDiv(
+        list(
+          htmlDiv(
+            htmlP("WineVision Dashboard"),
+            className = "seven columns main-title"),
+        htmlDiv(
+          list(
+            dccLink("Learn more",
+                    href = "/WineVision/learn-more",
+                    className = "learn-more-button")),
+          className = "twelve columns")
+        ),
+      className = "twelve columns")
+      ),
+    className = "row"
+    )
+  
   return(header)
   
 }
 
 
 get_menu<-function(){
-  menu =htmlDiv(
-    list(
-      dccLink(
-        "Wine Type Comparison",
-        href="/WineVision/Wine-Types",
-        className="tab first"
-      ),
-      dccLink(
-        "Quality Factors",
-        href="/WineVision/Quality-Factors",
-        className="tab ",
-      )
+  menu = htmlDiv(list(
+    dccLink(
+      "Wine Type Comparison",
+      href="/WineVision/Wine-Types",
+      className="tab first"),
+    dccLink(
+      "Quality Factors",
+      href="/WineVision/Quality-Factors",
+      className="tab ")
     ),
     className="rowrow alltab "
   )
@@ -90,22 +87,16 @@ learn_more_layout<-(htmlDiv(list(
   htmlDiv(list(# Row 3
     htmlDiv(list(
       htmlH3('Motivation'),
-      htmlH6("Wine is a multi billion dollar global industry. 
-             With 36 billion bottles of wine produced each year
-             , producers are constantly looking for ways 
-             to outperform the competition and create the best
-             wines they can. Portugal in particular is second 
-             in the world for per-capita wine consumption and eleventh 
-             for wine production, creating over 600,000 litres per year 
-             Physicochemical components are fundamental to a wine’s quality
-             and those who understand this aspect of wine will have a greater
-             edge into crafting an enjoyable and profitable product.")
-    ), 
-    className="product"
-      )
-      
+      htmlH6("With 36 billion bottles of wine produced each year, wine makers
+              are constantly looking for ways to outperform the competition and
+              create the best wines they can. Portugal in particular is second
+              in the world for per-capita wine consumption and eleventh for
+              wine production, creating over 600,000 litres per year.
+              Given that physicochemical components are fundamental to a wine's
+              quality, those who understand this aspect of wine will have a
+              greater edge into crafting an enjoyable and profitable product.")), 
+      className="product")
     ),
-    
     className="twelve columns"),
   htmlDiv(
     dccMarkdown(
