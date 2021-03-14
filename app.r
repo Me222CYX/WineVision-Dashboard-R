@@ -8,11 +8,12 @@ library(dash)
 library(dashHtmlComponents)
 library(dashBootstrapComponents)
 library(dashCoreComponents)
-########################################################3
+
+########################################################
+## APP AND FUNCTIONAL APP OBJECTS
+########################################################
+
 app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
-
-
-
 
 colors <- list(background = 'white', text = 'black')
 
@@ -43,7 +44,7 @@ get_header <- function() {
 }
 
 
-get_menu<-function(){
+get_menu <- function() {
   menu = htmlDiv(list(
     dccLink(
       "Wine Type Comparison",
@@ -60,12 +61,14 @@ get_menu<-function(){
 }
 
 
+Header <- htmlDiv(list(get_header(), htmlBr(), get_menu()))
 
-Header<-htmlDiv(list(get_header(), htmlBr(), get_menu()))
 
+Menu <- htmlDiv(list(get_menu()))
 
-Menu<-htmlDiv(list(get_menu()))
-############################
+########################################################
+## APP LAYOUT
+########################################################
 
 app$layout(htmlDiv(list(
   
@@ -178,7 +181,9 @@ Quality_Factors_layout<-(htmlDiv(list(
 )))
 
 
-#################################################################################
+########################################################
+## APP PAGE CALLBACKS
+########################################################
 
 app$callback(output = list(id='page-content', property = 'children'),
              params = list(input(id='url', property = 'pathname')),
@@ -197,6 +202,10 @@ app$callback(output = list(id='page-content', property = 'children'),
                }
              }
 )
-##########################3333
+
+########################################################
+## RUN APP
+########################################################
+
 app$run_server(debug = T)
 
