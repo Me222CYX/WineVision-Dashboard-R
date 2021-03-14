@@ -1,0 +1,55 @@
+---
+title: "Erics Stuff"
+author: "Eric Baxter"
+date: "14/03/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+wine <- read.csv("data/processed/wine_quality.csv")
+corr_df <- read.csv("data/processed/correlation.csv")
+```
+
+
+# Option 1: correlation matrix
+
+```{r}
+library(GGally)
+ggpairs(wine, columns = 2: 5, ggplot2::aes(colour=Wine))
+```
+
+# Option 2
+
+```{r}
+library(ggcorrplot)
+corr_red <- wine %>% filter(Wine == "red") %>% subset(select = -c(Wine, Quality.Factor)) %>% 
+  cor()
+corr_white <- wine %>% filter(Wine == "white") %>% subset(select = -c(Wine, Quality.Factor)) %>% cor()
+```
+
+```{r}
+ggcorrplot(corr_red,
+           hc.order = TRUE,
+           type = "lower",
+           outline.color = "white",
+           color = c("darkred", "white", "darkred"))
+ggcorrplot(corr_white,
+           hc.order = TRUE,
+           type = "upper",
+           outline.color = "white",
+           color = c("blue", "white", "blue"))
+```
+
+
+
+
+
+
+
+
+
