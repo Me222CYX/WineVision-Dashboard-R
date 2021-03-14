@@ -9,6 +9,9 @@ library(dashHtmlComponents)
 library(dashBootstrapComponents)
 library(dashCoreComponents)
 
+library(ggplot2)
+library(plotly)
+
 ########################################################
 ## APP AND FUNCTIONAL APP OBJECTS
 ########################################################
@@ -47,11 +50,11 @@ get_header <- function() {
 get_menu <- function() {
   menu = htmlDiv(list(
     dccLink(
-      "Wine Type Comparison",
+      "Red/White Wine Comparison",
       href="/WineVision/Wine-Types",
       className="tab first"),
     dccLink(
-      "Quality Factors",
+      "Quality Factor Analysis",
       href="/WineVision/Quality-Factors",
       className="tab ")
     ),
