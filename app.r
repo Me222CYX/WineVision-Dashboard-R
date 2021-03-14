@@ -165,7 +165,7 @@ learn_more_layout <- htmlDiv(
     
     ![Wine chemistry](https://d2cbg94ubxgsnp.cloudfront.net/Pictures/480x270//9/2/5/139925_160412_PRS_AWRI_GAGO_0262.jpg)
     
-    ## App Description
+    #### App Description
     The dashboard has <_?_> pages:
     
     {{{{{{{{{{ ***Edit this, reduce words, compress***
@@ -207,7 +207,7 @@ learn_more_layout <- htmlDiv(
     Paulo Cortez, University of Minho, Guimarães, Portugal, http://www3.dsi.uminho.pt/pcortez
     A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal @2009
     "
-))))
+),style = list("font-size"="1.925rem"))))
 
 
 #############################################
