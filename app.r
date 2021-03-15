@@ -8,9 +8,11 @@ library(dash)
 library(dashHtmlComponents)
 library(dashBootstrapComponents)
 library(dashCoreComponents)
-
+library(readr)
 library(ggplot2)
 library(plotly)
+library(stringr)
+library(dashTable)
 
 #############################################
 ## APP AND FUNCTIONAL APP OBJECTS
