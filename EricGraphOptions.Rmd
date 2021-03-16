@@ -45,8 +45,22 @@ ggcorrplot(corr_white,
            color = c("blue", "white", "blue"))
 ```
 
+# Options list
 
+```{r}
+variables
+```
 
+```{r}
+options <- list()
+for (i in 1: length(variables)){
+  options[i] <- list("label" = variables[i], "value" = variables[i])
+}
+```
+
+```{r}
+winex <- subset(wine, Wine %in% c("red", "white"))
+```
 
 
 
