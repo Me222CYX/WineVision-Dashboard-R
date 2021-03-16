@@ -17,11 +17,8 @@ variables <- colnames(subset(wine, select = -c(Wine, Quality.Factor, Quality.Fac
     # Create a correlation matrix
     corr <- cor(winex)
     p <-
-      ggcorrplot(corr,
-                 hc.order = TRUE,
-                 type = "lower",
-                 outline.color = "white",
-                 color = c("darkred", "white", "darkred"))
+      ggplot(winex, aes(x = variables[1], y = variables[2])) + geom_bin2d() +
+      geom_smooth(method = lm)
 
 app <-  Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
 
