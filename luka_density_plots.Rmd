@@ -1,0 +1,67 @@
+
+```{r}
+library(ggplot2)
+library(plotly)
+library(plyr)
+library(glue)
+```
+
+
+```{r}
+wine <- read.csv(file = "data/processed/wine_quality.csv")
+
+factors <- c(1, 13, 14, 15)
+#wine[, factors] <- as.factor(wine[, factors])
+wine[, -factors] <- as.numeric(unlist(wine[, -factors]))
+
+white <- wine[wine[,'Wine']=='white', ]
+red <- wine[wine[,'Wine']=='red', ]
+wine_type <- list('White' = white, 'Red' = red)
+
+mu_white <- ddply(white, "Quality.Factor", numcolwise(mean))
+mu_red <- ddply(red, "Quality.Factor",  numcolwise(mean))
+mu_type <- list(mu_white, mu_red)
+
+vars <- variable.names(wine)[-15] %>% as.vector()
+vars
+```
+
+```{r}
+### OPERATION ###
+
+density_plot <- function(winetype = 2, variable = 12) {
+  
+  coln <- sym(colnames(wine)[variable])
+
+  ggplot(wine_type[[winetype]], aes(x = !!coln, fill = Quality.Factor)) +
+    
+    geom_density(alpha = 0.4) +
+    geom_vline(data=mu_type[[winetype]], aes(xintercept=!!coln, color=Quality.Factor), linetype="dashed", size=0.9) +
+    ggtitle(glue('{coln} Quality Factor Distribution'), subtitle = glue('For {names(wine_type[winetype])} Wine')) +
+    theme_classic() +
+    theme(legend.title = element_text('Quality Levels'),
+          legend.position = c(0.94,0.88),
+          text = element_text(size = 12),
+          element_line(size = 0.3),
+          panel.grid.major = element_line(color = '#ededed')) +
+    ylab('Density') + xlab(coln)
+}
+
+```
+
+```{r}
+par(mfrow = c(2,2))
+
+density_plot(1, 2)
+density_plot(1, 4)
+density_plot(1, 8)
+density_plot(1, 10)
+
+density_plot(2, 3)
+density_plot(2, 5)
+density_plot(2, 7)
+density_plot(2, 9)
+
+
+```
+

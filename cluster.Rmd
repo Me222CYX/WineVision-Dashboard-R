@@ -1,0 +1,56 @@
+---
+title: "cluster"
+author: "Yuxuan"
+date: "14/03/2021"
+output: html_document
+---
+
+```{R}
+
+library(gclus)
+library(tidyverse)
+library(mclust)
+```
+
+```{R}
+
+wine_quality <- read_csv("data/processed/wine_quality.csv")
+head(wine_quality)
+```
+
+
+```{R}
+wine_quality%>%select(-`Quality Factor Numeric`,-Wine,-`Quality Factor`)->data
+y<-wine_quality$Wine
+
+
+plot(data,col=y)
+```
+
+```{R}
+
+data%>%select(`Volatile Acidity (g/dm^3)`,pH)->d2
+test2 <- kmeans(scale(d2), 2)
+plot(d2, col=test2$cl)
+
+```
+
+
+
+```{R}
+mdat <- Mclust(data)
+plot(mdat, what="classification")
+
+```
+
+
+### logistic regression
+
+```{R}
+wine_quality%>%select(-Quality,-`Quality Factor Numeric`)->datarf
+library(randomForest)
+rfbod <- randomForest(factor(`Quality Factor`)~., data=datarf)
+rfbod
+```
+
+
