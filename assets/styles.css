@@ -22,7 +22,7 @@ body {
   box-shadow: 0 0 10px lightgrey;
 }
 
-.pagetwo {
+/*.pagetwo {
   position: relative;
   width: 310mm;
   min-height: 240mm;
@@ -41,7 +41,7 @@ body {
 @page {
   size: A4;
   margin: 0;
-}
+}*/
 @media print {
   html,
   body {
@@ -83,6 +83,7 @@ p.padded {
   color: #8496b8;
 }
 
+/*
 table {
   width: 100%;
 }
@@ -119,7 +120,7 @@ th {
 table.tiny-header tr:first-child {
   font-size: 8px;
 }
-
+*/
 .columns {
   margin-left: 0 !important;
 }
@@ -343,12 +344,13 @@ a:active {
   .row > .columns:not(:first-child) {
     padding: 0 0;
   }
+  /*
   .svg-container {
     width: 255px !important;
   }
   .main-svg {
     width: 255px !important;
-  }
+  }*/
   .three.columns {
     text-align: left;
     padding: 0 10px;
