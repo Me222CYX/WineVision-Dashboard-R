@@ -21,7 +21,7 @@ app$layout(
       htmlDiv(list(
         htmlH4('Select your variables:'),
         # htmlDiv(children = "Dash: A web application framework for R."),
-        htmlBr(),
+        # htmlBr(),
         htmlH5('X-axis'),
         dccDropdown(
           id='xcol-select',
@@ -37,7 +37,8 @@ app$layout(
             purrr::map(function(ycol) list(label = ycol, value = ycol)), 
           value='pH')
         
-      ), style = list(width = '49%', display = 'inline-block')),
+      # ), style = list(width = '49%', display = 'inline-block')),
+      ), style = list(width = '49%')),
       
       htmlDiv(list(
         htmlH4('Select your wine type:'),
