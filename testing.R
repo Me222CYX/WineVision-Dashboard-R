@@ -21,22 +21,7 @@ app$layout(htmlDiv(
       list(
         htmlDiv(
           list(
-            htmlH4('Select your variables:', className = "app__header__title"),
-            htmlH5('X-axis'),
-            dccDropdown(
-              id='xcol-select',
-              options = wine %>% select_if(is.numeric) %>%
-                colnames %>%
-                purrr::map(function(xcol) list(label = xcol, value = xcol)), 
-              value='pH'),
-            htmlH5('Y-axis'),
-            dccDropdown(
-              id='ycol-select',
-              options = wine %>% select_if(is.numeric) %>%
-                colnames %>%
-                purrr::map(function(ycol) list(label = ycol, value = ycol)), 
-              value='pH')
-
+            htmlH5("Quality Factors", className = "app__header__title")
           ), className = "app__header__desc"
         ),
         htmlDiv(
@@ -51,17 +36,32 @@ app$layout(htmlDiv(
     ),
     htmlDiv(
       list(
-        # wind speed
+        # scatter plot
         htmlDiv(
           list(
             htmlDiv(
-              list(htmlH6("Interactive Plots", className = "graph__title"))
+              list(
+                htmlH4('Select your variables:'),
+                htmlH5('X-axis'),
+                dccDropdown(
+                  id='xcol-select',
+                  options = wine %>% select_if(is.numeric) %>%
+                    colnames %>%
+                    purrr::map(function(xcol) list(label = xcol, value = xcol)), 
+                  value='pH'),
+                htmlH5('Y-axis'),
+                dccDropdown(
+                  id='ycol-select',
+                  options = wine %>% select_if(is.numeric) %>%
+                    colnames %>%
+                    purrr::map(function(ycol) list(label = ycol, value = ycol)), 
+                  value='pH'),
+                htmlH5("Interactive Plots", className = "graph__title"))
             ),
             dccGraph(
-              id='plot-area')
-              )
+              id = "plot-area"
             )
-          ), className = "two-thirds column"
+          ), className = "two-thirds column wind__speed__container"
         ),
         htmlDiv(
           list(
@@ -70,7 +70,7 @@ app$layout(htmlDiv(
               list(
                 htmlDiv(
                   list(
-                    htmlH6(
+                    htmlH4(
                       "Select your wine type:",
                       className = "graph__title"
                     )
@@ -85,10 +85,11 @@ app$layout(htmlDiv(
                       value = 'white',
                       labelStyle = list(display = 'inline-block')
                     )
-                  ), className = "radio"
+                  ), className = "slider"
                 ),
                 dccGraph(
-                  id='bar-plot')
+                  id = "bar-plot"
+                )
               ), className = "graph__container first"
             )
             # wind direction
@@ -97,19 +98,28 @@ app$layout(htmlDiv(
             #     htmlDiv(
             #       list(
             #         htmlH6(
-            #           "Other plot", className = "graph__title"
+            #           "WIND DIRECTION", className = "graph__title"
             #         )
             #       )
             #     ),
             #     dccGraph(
-            #       id='bar-plot')
+            #       id = "wind-direction",
+            #       figure = list(
+            #         layout = list(
+            #           plot_bgcolor = app_color[["graph_bg"]],
+            #           paper_bgcolor = app_color[["graph_bg"]]
+            #         )
+            #       )
+            #     )
             #   ), className = "graph__container second"
             # )
           ), className = "one-third column histogram__direction"
         )
       ), className = "app__content"
     )
-)
+  ), className = "app__container"
+))
+
 
 app$callback(
   output = list(id='plot-area', property='figure'),
@@ -135,7 +145,7 @@ app$callback(
     wine_dif <- wine %>% subset(Wine == type)
     wine_id <- selected_data[[1]] %>% purrr::map_chr('text')
     p <- ggplot(wine_dif %>% filter(id %in% wine_id)) +
-      aes(y = Quality.Factor,
+      aes(x = Quality.Factor,
           fill = Quality.Factor) +
       geom_bar(width = 0.6) +
       ggthemes::scale_fill_tableau()
