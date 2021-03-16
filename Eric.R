@@ -10,36 +10,47 @@ library(plotly)
 wine <- read.csv("data/processed/wine_quality.csv")
 corr_df <- read.csv("data/processed/correlation.csv")
 
-### Get list of column names for dropdown
+### R messed up column names so I'm trying to fix
 variables <- colnames(subset(wine, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric)))
+variables[11] <- "Alcohol..Percent"
+variablesNoUnits <- gsub("\\..\\..*","", variables)
+variablesNoUnits <- gsub("(..mg.dm)*","", variablesNoUnits)
+variablesNoUnits <- gsub("\\.","", variablesNoUnits)
 
 app = Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
 
 app$layout(dbcContainer(
   dbcRow(list(
     dbcCol(list(
+      htmlH4("Choose Factor Levels"),
       dbcRow(list(
-        htmlH5("Quality"),
-        dccChecklist(id = "quality",
-                     options = list(
-                       list("label" = "Below Average", "value" = 0),
-                       list("label" = "Average", "value" = 1),
-                       list("label" = "Above Average", "value" = 2)
-                     ),
-                     value = list(0,1,2)
-        ),
-        htmlH5("Wine Type"),
-        dccChecklist(id = "winetype",
-                     options = list(
-                       list("label" = "White Wines", "value" = "white"),
-                       list("label" = "Red Wines", "value" = "red")
-                     ),
-                     value=list("red", "white")
-        ))),
+        dbcCol(list(
+          htmlH5("Quality"),
+          dccChecklist(id = "quality",
+                       options = list(
+                         list("label" = "Below Average", "value" = 0),
+                         list("label" = "Average", "value" = 1),
+                         list("label" = "Above Average", "value" = 2)
+                       ),
+                       value = list(0,1,2)
+          )
+        )),
+        dbcCol(list(
+          htmlH5("Wine Type"),
+          dccChecklist(id = "winetype",
+                       options = list(
+                         list("label" = "White Wines", "value" = "white"),
+                         list("label" = "Red Wines", "value" = "red")
+                       ),
+                       value=list("red", "white")
+          )
+        ))
+      )),
       dccGraph(
         id = "matrix")
     )),
     dbcCol(list(
+      htmlH4("Choose Scatterplot Axes"),
       htmlH5("x-axis"),
       dccDropdown(id = "x-axis",
                   options = list( #Couldn't figure out a list comprehension alternative
@@ -94,15 +105,21 @@ app$callback(
     winex <- subset(wine, Wine %in% winetype)
     winex <- subset(winex, Quality.Factor.Numeric %in% quality)
     winex <- subset(winex, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric))
-    # Create a correlation matrix
+    # Janky regex to remove periods and units to make things more readable
+    colnames(winex) <- gsub("\\..\\..*","", colnames(winex))
+    colnames(winex) <- gsub("(..mg.dm)*","", colnames(winex))
+    colnames(winex) <- gsub("\\.","", colnames(winex))
+    # Create a correlation matrix and reorder it alphabetically
     corr <- cor(winex)
+    order <- corrplot::corrMatOrder(corr, "alphabet")
+    corr <- corr[order,order]
     p <-
       ggcorrplot(corr,
         hc.order = TRUE,
         type = "lower",
         outline.color = "white",
-        color = c("darkred", "white", "darkred"))
-    ggplotly(p)
+        color = c("darkred", "lightgray", "darkred"))
+    ggplotly(p, height = 500, width = 500)
   }
 )
 
@@ -117,10 +134,12 @@ app$callback(
     winex <- subset(wine, Wine %in% winetype)
     winex <- subset(winex, Quality.Factor.Numeric %in% quality)
     p <- ggplot(winex, aes(x = !!sym(x), y = !!sym(y))) + geom_bin2d() +
+      scale_fill_gradient(low="lightgray", high = "darkred") +
+      theme_minimal() +
       geom_smooth(method = lm)
     ggplotly(p)
   }
 )
 
 
-app$run_server(host = '0.0.0.0')
+app$run_server(debug = T)
