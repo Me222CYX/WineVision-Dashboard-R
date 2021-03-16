@@ -159,6 +159,12 @@ a:active {
   text-decoration: none;
   display: inline-block;
 }
+h4 {
+  font-size: 2.4rem;
+  line-height: 1.35;
+  letter-spacing: -0.08rem;
+  background-color: #F4D03F;
+}
 
 #learn-more-button {
   float: right;
