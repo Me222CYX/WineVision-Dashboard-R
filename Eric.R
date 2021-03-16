@@ -13,8 +13,8 @@ corr_df <- read.csv("data/processed/correlation.csv")
 ### Get list of column names for dropdown
 variables <- colnames(subset(wine, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric)))
 
-app = Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
-
+#app = Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
+app = Dash$new()
 app$layout(dbcContainer(
   dbcRow(list(
     dbcCol(list(
@@ -98,10 +98,10 @@ app$callback(
     corr <- cor(winex)
     p <-
       ggcorrplot(corr,
-        hc.order = TRUE,
-        type = "lower",
-        outline.color = "white",
-        color = c("darkred", "white", "darkred"))
+                 hc.order = TRUE,
+                 type = "lower",
+                 outline.color = "white",
+                 color = c("darkred", "white", "darkred"))
     ggplotly(p)
   }
 )
@@ -109,9 +109,9 @@ app$callback(
 app$callback(
   output("scatter", "figure"),
   params = list(input("x-axis", "value"),
-       input("y-axis", "value"),
-       input("winetype", "value"),
-       input("quality", "value")),
+                input("y-axis", "value"),
+                input("winetype", "value"),
+                input("quality", "value")),
   function(x, y, winetype, quality){
     # Subset to our desired variable levels
     winex <- subset(wine, Wine %in% winetype)

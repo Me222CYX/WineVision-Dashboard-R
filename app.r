@@ -22,7 +22,9 @@ fig <- plot_ly()
 ## APP AND FUNCTIONAL APP OBJECTS
 #############################################
 
-app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
+#app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
+app = Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
+#app <- Dash$new()
 app$config['suppress_callback_exceptions'] = TRUE
 
 
@@ -304,13 +306,14 @@ Wine_Types_layout <- htmlDiv(
 learn_more_layout <- htmlDiv(
   list(
     Header,
+    htmlBr(),
     htmlDiv(
       list(
         # Row 3
         htmlDiv(
           list(
             htmlH3('Motivation'),
-            htmlH6("With 36 billion bottles of wine produced each year, wine makers
+            htmlP("With 36 billion bottles of wine produced each year, wine makers
                     are constantly looking for ways to outperform the competition and
                     create the best wines they can. Portugal in particular is second
                     in the world for per-capita wine consumption and eleventh for
@@ -369,7 +372,6 @@ learn_more_layout <- htmlDiv(
     
     The dataset consists of the physiochemical composition and sensory test results for 4898 white and 1599 red wine samples which were collected from May 2004 to February 2007. Each wine sample contains 12 variables that provide the acidity properties (fixed acidity, volatile acidity, citric acid, pH), sulphides contents (free sulfur dioxide, total sulfur dioxide, sulphates), density related properties (residual sugar, alcohol, density), and salt content (chlorides). It also contains quality as the response variable. In order to improve classification analyses, we define a new variable, quality_factor. Any wine with a quality score less than six is classified as “below average”, a score of 6 is “average”, and above 6 is “above average”.
 
-
     #### A Fun Usage Scenario
     Alice is a winemaker in British Columbia's Okanagan Valley. She would like to create a new summer wine and hopes to take inspiration from the Vinho Verde wines, known for their refreshing qualities. Alice seeks our dashboard to better understand what wine attributes she should focus on to provide a tasting experience comparable to the very best Vinho Verde wines. However, there are some physicochemical properties she has little control over due to the soils and grape species available to her. Due to the above average alkalinity of Okanagan soil, she knows that her wines will typically be less acidic than true Vinho Verde wines, and the altitude means the chloride content will be lower as well. She wants to try to optimize the variables she has control over to make the best wine possible. She looks to our dashboard to see how Vinho Verde wines with higher pH and lower chloride content tend to fare. Looking at the interactive scatterplots, she sees that wines which have values within her possible ranges for these variables tend to be of very poor quality when they are also high in residual sugar, but less sweet wines are of good quality. She then consults the histograms and sees that there are not very many wines available that have these properties, so she knows that she will not have much direct competition should she go forward with this design. A few years later, she released this wine to broad critical acclaim and millions in profit.
     
@@ -388,8 +390,8 @@ learn_more_layout <- htmlDiv(
     Paulo Cortez, University of Minho, Guimarães, Portugal, http://www3.dsi.uminho.pt/pcortez
     A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal @2009
     "
-),style = list("font-size"="1.925rem"))))
-
+))))
+#style = list("font-size"="1.625rem")
 
 #############################################
 ## APP PAGE CALLBACKS

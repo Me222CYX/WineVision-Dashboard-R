@@ -11,7 +11,7 @@ library(dashTable)
 library(tidyverse)
 
 app <- Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
-
+#app <- Dash$new()
 wine <- read.csv("data/processed/wine_quality.csv")
 wine$id <- as.character(1:nrow(wine))
 
