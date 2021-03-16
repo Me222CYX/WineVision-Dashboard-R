@@ -5,6 +5,7 @@ library(dashBootstrapComponents)
 library(tidyverse)
 library(ggcorrplot)
 library(plotly)
+library(GGally)
 
 ### Data
 wine <- read.csv("data/processed/wine_quality.csv")
@@ -12,7 +13,6 @@ corr_df <- read.csv("data/processed/correlation.csv")
 
 ### R messed up column names so I'm trying to fix
 variables <- colnames(subset(wine, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric)))
-variables[11] <- "Alcohol..Percent"
 variablesNoUnits <- gsub("\\..\\..*","", variables)
 variablesNoUnits <- gsub("(..mg.dm)*","", variablesNoUnits)
 variablesNoUnits <- gsub("\\.","", variablesNoUnits)
@@ -64,7 +64,7 @@ app$layout(dbcContainer(
                     list("label" = variables[8], "value" = variables[8]),
                     list("label" = variables[9], "value" = variables[9]),
                     list("label" = variables[10], "value" = variables[10]),
-                    list("label" = variables[11], "value" = variables[11]),
+                    list("label" = "Alcohol Percent", "value" = variables[11]),
                     list("label" = variables[12], "value" = variables[12])
                   ),
                   value = variables[2]),
@@ -105,6 +105,10 @@ app$callback(
     winex <- subset(wine, Wine %in% winetype)
     winex <- subset(winex, Quality.Factor.Numeric %in% quality)
     winex <- subset(winex, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric))
+    if (quality == 1){ # The correlation plot breaks if only average quality chosen,
+      # since there is only one value
+      winex <- subset(winex, select = -c(Quality))
+    }
     # Janky regex to remove periods and units to make things more readable
     colnames(winex) <- gsub("\\..\\..*","", colnames(winex))
     colnames(winex) <- gsub("(..mg.dm)*","", colnames(winex))
@@ -118,7 +122,7 @@ app$callback(
         hc.order = TRUE,
         type = "lower",
         outline.color = "white",
-        color = c("darkred", "lightgray", "darkred"))
+        color = c("darkblue", "lightgray", "darkred"))
     ggplotly(p, height = 500, width = 500)
   }
 )
@@ -137,7 +141,7 @@ app$callback(
       scale_fill_gradient(low="lightgray", high = "darkred") +
       theme_minimal() +
       geom_smooth(method = lm)
-    ggplotly(p)
+    ggplotly(p, height = 500, width = 500)
   }
 )
 
