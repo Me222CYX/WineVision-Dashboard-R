@@ -5,20 +5,26 @@
 # Installs dash bootstrap
 library(devtools)
 library(dash)
+library(dashTable)
 library(dashHtmlComponents)
 library(dashBootstrapComponents)
 library(dashCoreComponents)
+
 library(readr)
+library(stringr)
+library(plyr)
+library(glue)
 library(ggplot2)
 library(plotly)
-library(stringr)
-library(dashTable)
+fig <- plot_ly()
 
 #############################################
 ## APP AND FUNCTIONAL APP OBJECTS
 #############################################
 
 app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
+app$config['suppress_callback_exceptions'] = TRUE
+
 
 colors <- list(background = 'white', text = 'black')
 
@@ -76,7 +82,28 @@ Menu <- htmlDiv(list(get_menu()))
 ## DATA
 #############################################
 
+df <- wine_quality <- read.csv("data/processed/wine_quality.csv")
+gsub("(mg/dm^3)","",colnames(df),fixed = TRUE)->cn
+gsub("(g/dm^3)","",cn,fixed = TRUE)->cn
+gsub("(g/cm^3)","",cn,fixed = TRUE)->cn
+gsub("(%)","",cn,fixed = TRUE)->cn
+str_trim(cn, side = c("right"))->cn
+colnames(df)<-cn
 
+## Luka
+# This could probably be done in the wrangling file
+wine <- df
+factors <- c(1, 13, 14, 15)
+wine[, -factors] <- as.numeric(unlist(wine[, -factors]))
+white <- wine[wine[,'Wine']=='white', ]
+red <- wine[wine[,'Wine']=='red', ]
+wine_type <- list('White' = white, 'Red' = red)
+
+mu_white <- ddply(white, "Quality.Factor", numcolwise(mean))
+mu_red <- ddply(red, "Quality.Factor",  numcolwise(mean))
+mu_type <- list(mu_white, mu_red)
+
+vars <- variable.names(wine)[-15] %>% as.vector()
 
 
 #############################################
@@ -87,29 +114,17 @@ app$layout(
   htmlDiv(
     list(
       # URL
-      dccLocation(id = 'url', refresh=FALSE),
+      dccLocation(id = 'url', refresh=TRUE), # Changed from false
       #Content
       htmlDiv(id='page-content')
       )
     )
   )
 
-
 ################################
 ## Table page
 
-
-df <- wine_quality <- read_csv("data/processed/wine_quality.csv")
-gsub("(mg/dm^3)","",colnames(df),fixed = TRUE)->cn
-gsub("(g/dm^3)","",cn,fixed = TRUE)->cn
-gsub("(g/cm^3)","",cn,fixed = TRUE)->cn
-gsub("(%)","",cn,fixed = TRUE)->cn
-str_trim(cn, side = c("right"))->cn
-colnames(df)<-cn
-
-
 page_size <- 10
-
 
 table_layout<-htmlDiv(list(
   Header,
@@ -225,11 +240,47 @@ Quality_Factors_layout <- htmlDiv(
     htmlDiv(
       list(
         htmlBr(),
-        htmlBr()
+        dccMarkdown("hello graph.
+                    may i ask why won't you FRIGGIN WORK"),
+        dccDropdown(
+          id = 'col-select',
+          options = wine %>% colnames %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
+          value = 8),
+        dccDropdown(
+          id = 'wine-select',
+          options = list(list(label = 'Red Wine', value = 2),
+                         list(label = 'White Wine', value = 1)),
+          value = 1),
+
+        htmlBr(),
+        dccGraph(id = 'densityplot')
       ),
       className = "twelve columns"
     )
   )
+)
+
+app$callback(
+  output(id = 'densityplot', property = 'figure'),
+  params = list(input(id = 'col-select', 'value'), 
+                input(id = 'wine-select', 'value')),
+  function(variable, winetype) {
+  
+    coln <- sym(colnames(wine)[variable])
+
+    plot <- ggplot(wine_type[[winetype]], aes(x = !!coln, fill = Quality.Factor)) + 
+            geom_density(alpha = 0.4) + ylab('Density') + xlab(coln) +
+            geom_vline(data=mu_type[[winetype]], aes(xintercept=!!coln, color=Quality.Factor), linetype="dashed", size=0.9) +
+            ggtitle(glue('{coln} Quality Factor Distribution'), subtitle = glue('For {names(wine_type[winetype])} Wine'))# +
+            theme_classic() +
+            theme(legend.title = element_text('Quality Levels'),
+                  legend.position = c(0.94,0.88),
+                  text = element_text(size = 12),
+                  element_line(size = 0.3),
+                  panel.grid.major = element_line(color = '#ededed'))
+    
+    ggplotly(plot)
+  }
 )
 
 ################################
@@ -278,9 +329,11 @@ learn_more_layout <- htmlDiv(
         
     "
     ### Welcome!
-    ##### Hello and thank you for stopping by the Wine Vision App! 
-    ##### Feel free to visit out [GitHub homebase](https://github.com/ubco-mds-2020-labs/WineVision-R-group8) for more information on the project. 
+    Hello and thank you for stopping by the Wine Vision App! 
     
+    Feel free to visit out [GitHub homebase](https://github.com/ubco-mds-2020-labs/WineVision-R-group8) for more information on the project. 
+    
+
     #### The problem
     Wine making has always been a traditional practice passed down for many generations; yet, some of wine's secrets are still a mystery to most people, even wine producers! So how are we supposed to craft the perfect wine without knowing what makes it perfect (speaking from both a consumer and business perspective)?
     
@@ -290,9 +343,8 @@ learn_more_layout <- htmlDiv(
     
     #### The solution
     **Our interactive dashboard will allow users to explore how a number of physicochemical variables interact and determine the subjective quality of a wine. Wine producers, wine enthusiasts, and curious individuals can all make use of this dashboard to discover these elusive relationships.** 
-    
-    ![Wine chemistry](https://d2cbg94ubxgsnp.cloudfront.net/Pictures/480x270//9/2/5/139925_160412_PRS_AWRI_GAGO_0262.jpg)
-    
+
+
     #### App Description
     The dashboard has <_?_> pages:
     
@@ -316,9 +368,8 @@ learn_more_layout <- htmlDiv(
     Data was collected from Vinho Verde wines originating from the northwest regions of Portugal. These wines have a medium alcohol content, and are particularly sought for their freshness in summer months. Each wine sample was evaluated by at least three sensory assessors (using blind tastes) who graded the wine from 0 (worst) to 10 (best). The final quality score is given by the median of these evaluations.
     
     The dataset consists of the physiochemical composition and sensory test results for 4898 white and 1599 red wine samples which were collected from May 2004 to February 2007. Each wine sample contains 12 variables that provide the acidity properties (fixed acidity, volatile acidity, citric acid, pH), sulphides contents (free sulfur dioxide, total sulfur dioxide, sulphates), density related properties (residual sugar, alcohol, density), and salt content (chlorides). It also contains quality as the response variable. In order to improve classification analyses, we define a new variable, quality_factor. Any wine with a quality score less than six is classified as “below average”, a score of 6 is “average”, and above 6 is “above average”.
-    
-    ![Vinho Verde Vineyard](https://blog.liebherr.com/appliances/us/wp-content/uploads/sites/3/2017/08/Vinho_Verde_Panther-753x493.jpg)
-    
+
+
     #### A Fun Usage Scenario
     Alice is a winemaker in British Columbia's Okanagan Valley. She would like to create a new summer wine and hopes to take inspiration from the Vinho Verde wines, known for their refreshing qualities. Alice seeks our dashboard to better understand what wine attributes she should focus on to provide a tasting experience comparable to the very best Vinho Verde wines. However, there are some physicochemical properties she has little control over due to the soils and grape species available to her. Due to the above average alkalinity of Okanagan soil, she knows that her wines will typically be less acidic than true Vinho Verde wines, and the altitude means the chloride content will be lower as well. She wants to try to optimize the variables she has control over to make the best wine possible. She looks to our dashboard to see how Vinho Verde wines with higher pH and lower chloride content tend to fare. Looking at the interactive scatterplots, she sees that wines which have values within her possible ranges for these variables tend to be of very poor quality when they are also high in residual sugar, but less sweet wines are of good quality. She then consults the histograms and sees that there are not very many wines available that have these properties, so she knows that she will not have much direct competition should she go forward with this design. A few years later, she released this wine to broad critical acclaim and millions in profit.
     
@@ -328,9 +379,11 @@ learn_more_layout <- htmlDiv(
     
     Please note that it's very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](https://github.com/ubco-mds-2020-labs/WineVision/blob/main/CODE_OF_CONDUCT.md) in all interactions both on and offline.
     
+
     #### Contact us
     If you want to report a problem or suggest an enhancement we'd love for you to [open an issue](https://github.com/ubco-mds-2020-labs/WineVision/issues) at this github repository because then we can get right on it.
     
+
     #### Data Citation
     Paulo Cortez, University of Minho, Guimarães, Portugal, http://www3.dsi.uminho.pt/pcortez
     A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal @2009
@@ -363,9 +416,10 @@ app$callback(output = list(id='page-content', property = 'children'),
              }
 )
 
+
 #############################################
 ## RUN APP
 #############################################
 
-app$run_server(debug = T)
+app$run_server(debug = T, dev_tools_hot_reload=FALSE)
 
