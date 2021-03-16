@@ -339,12 +339,12 @@ a:active {
   .row > .columns:not(:first-child) {
     padding: 0 0;
   }
-  .svg-container {
+  /* .svg-container {
     width: 255px !important;
   }
   .main-svg {
     width: 255px !important;
-  }
+  } */
   .three.columns {
     text-align: left;
     padding: 0 10px;
