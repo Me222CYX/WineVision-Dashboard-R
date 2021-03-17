@@ -523,7 +523,9 @@ app$callback(
     wine_dif <- wine %>% subset(Wine == type)
     scatter <- ggplot(wine_dif) + 
       aes(x = !!sym(xcol), y = !!sym(ycol), color = `Quality Factor`, text = id) + 
-      geom_point(alpha = 0.7) + ggthemes::scale_color_tableau()
+      geom_point(alpha = 0.7) + 
+      ggthemes::scale_color_tableau() +
+      theme_minimal()
     ggplotly(scatter, tooltip = 'text') %>% layout(dragmode = 'select')
   }
 )
@@ -540,7 +542,8 @@ app$callback(
     p <- ggplot(wine_dif %>% filter(id %in% wine_id)) +
       aes(x = Quality,
           fill = `Quality Factor`) +
-      geom_bar(width = 0.6, alpha = 0.5) +
+      geom_bar(width = 0.6, alpha = 0.7) +
+      theme_minimal() +
       theme(legend.title=element_blank()) +
       ggthemes::scale_fill_tableau() +
       ggtitle(glue('<b>Counts in Each Quality Factor</b>'))
@@ -561,7 +564,8 @@ app$callback(
     b <- ggplot(wine_dif %>% filter(id %in% wine_id)) +
       aes(x = `Quality Factor`,
           fill = `Quality Factor`) +
-      geom_bar(aes(y = (..count..)/sum(..count..))) +
+      geom_bar(aes(y = (..count..)/sum(..count..)), alpha = 0.7) +
+      theme_minimal() +
       theme(axis.text.x=element_blank(), legend.title=element_blank()) +
       ggthemes::scale_fill_tableau() + 
       ggtitle(glue('<b>Percentage for Each Quality Factor</b>'))
