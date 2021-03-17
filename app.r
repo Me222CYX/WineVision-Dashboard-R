@@ -65,14 +65,14 @@ get_menu <- function() {
     list(
       dccLink(
         "Distribution",
-        href="/WineVision/Quality-Factors",
+        href="/WineVision/Wine-table",
         className="tab "),
       dccLink(
         "Correlation",
         href="/WineVision/Wine-Types",
         className="tab first"),
       dccLink(
-        "Prediction",
+        "Exploration",
         href="/WineVision/Quality-Factors",
         className="tab "),
       dccLink(
