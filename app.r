@@ -461,6 +461,7 @@ Wine_Types_layout <- htmlDiv(
                   )
                 ))
               )),
+              htmlBr(),
               dccGraph(
                 id = "matrix")
             )),
@@ -543,7 +544,7 @@ app$callback(
                  type = "lower",
                  outline.color = "white",
                  color = c("darkblue", "lightgray", "darkred"))
-    ggplotly(p, height = 475, width = 475)
+    ggplotly(p, height = 550, width = 550) %>% layout(margin())
   }
 )
 
@@ -561,7 +562,7 @@ app$callback(
       scale_fill_gradient(low="lightgray", high = "darkred") +
       theme_minimal() +
       geom_smooth(method = lm)
-    ggplotly(p, height = 450, width = 450)
+    ggplotly(p, height = 450, width = 425)%>% layout(margin())
   }
 )
 
@@ -614,20 +615,15 @@ learn_more_layout <- htmlDiv(
 
 
     ### App Description
-    The dashboard has <_?_> pages:
+    The dashboard has four pages:
     
-    {{{{{{{{{{ ***Edit this, reduce words, compress***
+    **Distribution:** Investigate how different physiochemical variables are distributed in different groups.
     
-    an overview, a comparison of red and white wines, and a comparison of  different wine quality levels.
-    The Interactive Graphics page contains a number of graphis to explore the effects of physicochemical properties on wine quality. On the left hand side users are able to select the wine type (eg. red wine, white wine) as well as the physicochemical features of interest, with subset ranges if they so desire. Some possible visualizations are as follows:
+    **Correlation:** Study how different predictors correlate to each other.
     
-    The Overview page provides information on how to use the app and includes some references and further information for those interested in wine aspects the dashboard does not cover.
+    **Exploration:** Discover the proportions of wines at different quality levels within specific ranges for each variable.
     
-    The second page is Wine Type, primarily intended to demonstrate differences between red and white wines. This page has a good layout, without leaving any large white spaces. It also demonstrates a cohesive narrative, with users able to distinguish high correlation variables from the correlation matrix and then investigating deeper using the scatter plot and density plot.
-    
-    The third page is Quality Factors, where users can explore features of wines in different quality groups. Users can subset the data range by selecting areas on the scatter plot, which immediately updates the other plots. The bar plot allows users to visualize quality factor proportions in their selections.. The drag and drop functionality makes this page particularly interactive.
-    
-    }}}}}}}}}}}
+    **Raw Data:** See the dataset itself.
     
     
     ### The Data
