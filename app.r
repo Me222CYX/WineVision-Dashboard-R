@@ -64,17 +64,21 @@ get_menu <- function() {
   menu = htmlDiv(
     list(
       dccLink(
-        "Red/White Wine Comparison",
+        "Distribution",
+        href="/WineVision/Quality-Factors",
+        className="tab "),
+      dccLink(
+        "Correlation",
         href="/WineVision/Wine-Types",
         className="tab first"),
       dccLink(
-        "Wine Table",
-        href="/WineVision/Wine-table",
-        className="tab"),
-      dccLink(
-        "Quality Factor Analysis",
+        "Prediction",
         href="/WineVision/Quality-Factors",
-        className="tab ")
+        className="tab "),
+      dccLink(
+        "Raw Data",
+        href="/WineVision/Wine-table",
+        className="tab")
       ),
     className="rowrow alltab "
     )
@@ -438,7 +442,8 @@ Wine_Types_layout <- htmlDiv(
                                  list("label" = "Average", "value" = 1),
                                  list("label" = "Above Average", "value" = 2)
                                ),
-                               value = list(0,1,2)
+                               value = list(0,1,2),
+                               labelStyle = list("display" = "inline-block")
                   )
                 )),
                 dbcCol(list(
@@ -448,7 +453,8 @@ Wine_Types_layout <- htmlDiv(
                                  list("label" = "White Wines", "value" = "white"),
                                  list("label" = "Red Wines", "value" = "red")
                                ),
-                               value=list("red", "white")
+                               value=list("red", "white"),
+                               labelStyle = list("display" = "inline-block")
                   )
                 ))
               )),
@@ -534,7 +540,7 @@ app$callback(
                  type = "lower",
                  outline.color = "white",
                  color = c("darkblue", "lightgray", "darkred"))
-    ggplotly(p, height = 500, width = 500)
+    ggplotly(p, height = 475, width = 475)
   }
 )
 
@@ -552,7 +558,7 @@ app$callback(
       scale_fill_gradient(low="lightgray", high = "darkred") +
       theme_minimal() +
       geom_smooth(method = lm)
-    ggplotly(p, height = 500, width = 500)
+    ggplotly(p, height = 450, width = 450)
   }
 )
 
