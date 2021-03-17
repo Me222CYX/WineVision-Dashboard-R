@@ -250,6 +250,9 @@ app$callback(
 
 
 wine <- read.csv("data/processed/wine_quality.csv")
+
+# need an extra ID column for linking plots
+
 wine$id <- as.character(1:nrow(wine))
 
 Quality_Factors_layout <- htmlDiv(
