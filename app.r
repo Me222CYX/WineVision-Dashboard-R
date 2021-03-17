@@ -16,6 +16,8 @@ library(plyr)
 library(glue)
 library(ggplot2)
 library(plotly)
+
+
 fig <- plot_ly()
 
 #############################################
@@ -254,7 +256,7 @@ Quality_Factors_layout <- htmlDiv(
               list(
                 htmlImg(
                   # https://elite-brands.com/blog/wine-ratings-q3/
-                  src  =  "assets/rating.png",
+                  src  =  "assets/WineRatings_Header.jpg",
                   className = "app__menu__img"
                 )
               ), className = "app__header__logo"
