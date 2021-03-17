@@ -458,6 +458,7 @@ Wine_Types_layout <- htmlDiv(
                   )
                 ))
               )),
+              htmlBr(),
               dccGraph(
                 id = "matrix")
             )),
@@ -540,7 +541,7 @@ app$callback(
                  type = "lower",
                  outline.color = "white",
                  color = c("darkblue", "lightgray", "darkred"))
-    ggplotly(p, height = 475, width = 475)
+    ggplotly(p, height = 550, width = 550) %>% layout(margin())
   }
 )
 
@@ -558,7 +559,7 @@ app$callback(
       scale_fill_gradient(low="lightgray", high = "darkred") +
       theme_minimal() +
       geom_smooth(method = lm)
-    ggplotly(p, height = 450, width = 450)
+    ggplotly(p, height = 450, width = 425)%>% layout(margin())
   }
 )
 
