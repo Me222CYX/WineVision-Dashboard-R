@@ -1,7 +1,11 @@
 # **Wine Vision App** <img src="assets/logo.png" width="85" height="45" /> 
 ***Discover the physiochemical secrets to what makes a wine wonderful...***
 
-*You can visit the app directly by clicking here* &rarr; &rarr; &rarr; [***Wine Vision***](https://wine-vision.herokuapp.com/)
+*You can visit the app directly by clicking here* &rarr; &rarr; &rarr; 
+
+[***Python Version***](https://wine-vision.herokuapp.com/)
+
+[***R Version***](https://winevisionr.herokuapp.com/)
 
 
 ## Welcome!
