@@ -119,10 +119,10 @@ app$callback(
     corr <- corr[order,order]
     p <-
       ggcorrplot(corr,
-        hc.order = TRUE,
-        type = "lower",
-        outline.color = "white",
-        color = c("darkblue", "lightgray", "darkred"))
+                 hc.order = TRUE,
+                 type = "lower",
+                 outline.color = "white",
+                 color = c("darkblue", "lightgray", "darkred"))
     ggplotly(p, height = 500, width = 500)
   }
 )
@@ -130,9 +130,9 @@ app$callback(
 app$callback(
   output("scatter", "figure"),
   params = list(input("x-axis", "value"),
-       input("y-axis", "value"),
-       input("winetype", "value"),
-       input("quality", "value")),
+                input("y-axis", "value"),
+                input("winetype", "value"),
+                input("quality", "value")),
   function(x, y, winetype, quality){
     # Subset to our desired variable levels
     winex <- subset(wine, Wine %in% winetype)
