@@ -254,9 +254,10 @@ Quality_Factors_layout <- htmlDiv(
           list(
             htmlDiv(
               list(
+                htmlBr(),
                 htmlImg(
                   # https://elite-brands.com/blog/wine-ratings-q3/
-                  src  =  "assets/WineRatings_Header.jpg",
+                  src  =  "/assets/rating.png", width = "100%",
                   className = "app__menu__img"
                 )
               ), className = "app__header__logo"
