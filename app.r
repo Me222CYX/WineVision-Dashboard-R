@@ -172,7 +172,23 @@ page_size <- 10
 
 table_layout<-htmlDiv(list(
   Header,
-  dbcContainer(
+  htmlBr(),
+  htmlH4(
+    "Data Table:",
+    className = "graph__title"
+  ),
+  htmlBr(),
+  dbcContainer(list(
+    # dbcRow(
+    # htmlDiv(list(
+    #   htmlH4(
+    #     "Row data:",
+    #     className = "graph__title"
+    #   ))
+    #   
+    # )),
+    
+  
     dbcRow(list(
       # dbcCol(htmlDiv(
       #   dbcCard(
@@ -207,7 +223,7 @@ table_layout<-htmlDiv(list(
         )
         
       ), width=10)
-    )))))
+    ))))))
 
 
 app$callback(
