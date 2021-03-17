@@ -10,18 +10,17 @@ library(dashHtmlComponents)
 library(dashBootstrapComponents)
 library(dashCoreComponents)
 
+library(plotly)
+library(ggplot2)
 library(tidyverse)
 library(GGally)
 library(ggcorrplot)
+library(corrplot)
 library(readr)
 library(stringr)
 library(plyr)
 library(glue)
-library(ggplot2)
-library(plotly)
 
-
-fig <- plot_ly()
 
 #############################################
 ## APP AND FUNCTIONAL APP OBJECTS
@@ -64,9 +63,9 @@ get_menu <- function() {
   menu = htmlDiv(
     list(
       dccLink(
-        "Distribution",
-        href="/WineVision/Wine-table",
-        className="tab "),
+        "Quality Distributions",
+        href="/WineVision/Quality-Distributions",
+        className="tab"),
       dccLink(
         "Correlation",
         href="/WineVision/Wine-Types",
@@ -74,7 +73,7 @@ get_menu <- function() {
       dccLink(
         "Exploration",
         href="/WineVision/Quality-Factors",
-        className="tab "),
+        className="tab"),
       dccLink(
         "Raw Data",
         href="/WineVision/Wine-table",
@@ -93,26 +92,60 @@ Menu <- htmlDiv(list(get_menu()))
 ## DATA
 #############################################
 
-df <- wine_quality <- read.csv("data/processed/wine_quality.csv")
-gsub("(mg/dm^3)","",colnames(df),fixed = TRUE)->cn
-gsub("(g/dm^3)","",cn,fixed = TRUE)->cn
-gsub("(g/cm^3)","",cn,fixed = TRUE)->cn
-gsub("(%)","",cn,fixed = TRUE)->cn
-str_trim(cn, side = c("right"))->cn
-colnames(df)<-cn
+df <- wine <- read.csv("data/processed/wine_quality.csv")
+# need an extra ID column for linking plots ~ Rain
+wine$id <- as.character(1:nrow(wine))
+
+
+# df <- wine_quality <- read.csv("data/processed/wine_quality.csv")
+# gsub("(mg/dm^3)","",colnames(df),fixed = TRUE)->cn
+# gsub("(g/dm^3)","",cn,fixed = TRUE)->cn
+# gsub("(g/cm^3)","",cn,fixed = TRUE)->cn
+# gsub("(%)","",cn,fixed = TRUE)->cn
+# str_trim(cn, side = c("right"))->cn
+# colnames(df)<-cn
+
+
+# Eric's code - I like it and would like to use it on my page so it's here now ~ Luka :)
+variables <- colnames(wine) # Just rename all vars instead of some <--> subset(df, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric)))
+
+variablesNoUnits <- gsub("\\.\\..*$","", variables) # Remove units
+variablesNoUnits <- gsub("\\."," ", variablesNoUnits) # Replace dots with spaces
+# IF THIS GENERATES A PARSE ERROR ANYWHERE, simply replace "varibale name with space" --> "`varibale name with space`"
+
+colnames(wine) <- variablesNoUnits
+# Units in order of variables
+units <- c(' ', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(mg/dm^3)', '(mg/dm^3)', '(g/cm^3)', ' ', '(g/dm^3)', '(%)', ' ', ' ', ' ')
 
 ## Luka
-# This could probably be done in the wrangling file
-wine <- df
+# I could probably put this in the wrangling file
 factors <- c(1, 13, 14, 15)
 wine[, -factors] <- as.numeric(unlist(wine[, -factors]))
 white <- wine[wine[,'Wine']=='white', ]
 red <- wine[wine[,'Wine']=='red', ]
 wine_type <- list('White' = white, 'Red' = red)
 
-mu_white <- ddply(white, "Quality.Factor", numcolwise(mean))
-mu_red <- ddply(red, "Quality.Factor",  numcolwise(mean))
+
+mu_white <- ddply(white, "`Quality Factor`", numcolwise(mean))
+mu_red <- ddply(red, "`Quality Factor`",  numcolwise(mean))
 mu_type <- list(mu_white, mu_red)
+
+med_white <- ddply(white, "`Quality Factor`", numcolwise(median))
+med_red <- ddply(red, "`Quality Factor`",  numcolwise(median))
+med_type <- list(med_white, med_red)
+
+
+contmode <- function(vector) {
+  dens <- density(vector)
+  maxx = dens$x[which.max(dens$y)]
+  return(maxx)
+}
+
+mode_white <- ddply(white, "`Quality Factor`", numcolwise(contmode))
+mode_red <- ddply(red, "`Quality Factor`",  numcolwise(contmode))
+mode_type <- list(mode_white, mode_red)
+
+stats <- list('Mean'=mu_type, 'Median'=med_type, 'Mode'=mode_type)
 
 vars <- variable.names(wine)[-15] %>% as.vector()
 
@@ -133,7 +166,7 @@ app$layout(
   )
 
 ################################
-## Eaw Data page
+## Raw Data page
 
 page_size <- 10
 
@@ -240,20 +273,118 @@ app$callback(
   }
 )
 
+################################
+## Quality Distributions Page - Luka
+
+Quality_Distribution_layout <- htmlDiv(
+  list(
+    Header,
+    htmlDiv(
+      list(
+        htmlBr(),
+        htmlH4(
+          "Wine Selection:",
+          className = "graph__title"
+          ),
+        htmlBr(),
+        dccDropdown(
+          id = 'wine-select',
+          options = list(list(label = 'White Wine', value = 1),
+                        list(label = 'Red Wine', value = 2)),
+          value = 1
+          ),
+        htmlBr(),
+        dccDropdown(
+          id = 'col-select',
+          options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
+          value = 9
+          ),
+        htmlBr(),
+        dccDropdown(
+          id = 'stat',
+          options = list(list(label = 'Mean', value = 'Mean'),
+                        list(label = 'Median', value = 'Median'),
+                        list(label = 'Mode', value = 'Mode')),
+          value = 'Mean'
+          ),
+        htmlBr(),
+        dccGraph(id = 'density'),
+        htmlBr(),
+        dccGraph(id = 'stackeddensity')
+      ),
+    )
+  )
+)
 
 
-#############################################
+app$callback(
+  output(id = 'density', property = 'figure'),
+  params = list(input(id = 'col-select', 'value'), 
+                input(id = 'wine-select', 'value'),
+                input(id = 'stat', 'value')),
 
+  function(variable, winetype, stat) {
+
+    coln <- sym(colnames(wine)[variable])
+
+    plot <- ggplot(wine_type[[winetype]], aes(x = !!coln, fill = `Quality Factor`)) + 
+            geom_density(alpha = 0.4) + ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
+            geom_vline(data=stats[[stat]][[winetype]], aes(xintercept=!!coln, color=`Quality Factor`), linetype="dashed", size=0.5) +
+            ggtitle(glue('Density Type: <b>Overlaid</b>')) +
+            theme_classic() +
+            theme(plot.title = element_text(size=14, hjust = 0.01),
+                  axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+                  legend.title = element_blank(),
+                  text = element_text(size = 16),
+                  element_line(size = 1))
+                  
+
+    plot <- ggplotly(plot)
+    plot <- plot %>% layout(
+      #clickmode='event+select',
+      legend = list(title=list(text='<b> Quality Levels </b>\n'), x = 0.85, y = 1, itemwidth = 40, tracegroupgap = 13),
+      autosize = FALSE,
+      width = 1100, height = 500)
+
+    plot
+  }
+)
+
+app$callback(
+  output(id = 'stackeddensity', property = 'figure'),
+  params = list(input(id = 'col-select', 'value'), 
+                input(id = 'wine-select', 'value'),
+                input(id = 'stat', 'value')),
+
+  function(variable, winetype, stat) {
+
+    coln <- sym(colnames(wine)[variable])
+
+    plot <- ggplot(wine_type[[winetype]], aes(x = !!coln, fill = `Quality Factor`)) + 
+            geom_density(alpha = 0.4, position="stack") + ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
+            geom_vline(data=stats[[stat]][[winetype]], aes(xintercept=!!coln, color=`Quality Factor`), linetype="dashed", size=0.5) +
+            ggtitle(glue('Density Type: <b>Stacked</b>')) +
+            theme_classic() +
+            theme(plot.title = element_text(size=14, hjust = 0.01),
+                  axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+                  legend.title = element_blank(),
+                  text = element_text(size = 16),
+                  element_line(size = 1))
+                  
+
+    plot <- ggplotly(plot)
+    plot <- plot %>% layout(
+      legend = list(title=list(text='<b> Quality Levels </b>\n'), x = 0.85, y = 1, itemwidth = 40, tracegroupgap = 13),
+      autosize = FALSE,
+      width = 1100, height = 500)
+
+    plot
+  }
+)
+#Quality.Factor
+################################
 ## Quality Factor Analysis Page - RAIN
 
-#############################################
-
-
-wine <- read.csv("data/processed/wine_quality.csv")
-
-# need an extra ID column for linking plots
-
-wine$id <- as.character(1:nrow(wine))
 
 Quality_Factors_layout <- htmlDiv(
   list(
@@ -288,7 +419,7 @@ Quality_Factors_layout <- htmlDiv(
                       options = wine %>% select_if(is.numeric) %>%
                         colnames %>%
                         purrr::map(function(xcol) list(label = xcol, value = xcol)), 
-                      value='Chlorides..g.dm.3.'),
+                      value='Chlorides'),
                     htmlH5('Y-axis'),
                     dccDropdown(
                       id='ycol-select',
@@ -369,7 +500,7 @@ app$callback(
   function(xcol, ycol, type) {
     wine_dif <- wine %>% subset(Wine == type)
     scatter <- ggplot(wine_dif) + 
-      aes(x = !!sym(xcol), y = !!sym(ycol), color = Quality.Factor, text = id) + 
+      aes(x = !!sym(xcol), y = !!sym(ycol), color = `Quality Factor`, text = id) + 
       geom_point(alpha = 0.7) + ggthemes::scale_color_tableau()
     ggplotly(scatter, tooltip = 'text') %>% layout(dragmode = 'select')
   }
@@ -386,7 +517,7 @@ app$callback(
     wine_id <- selected_data[[1]] %>% purrr::map_chr('text')
     p <- ggplot(wine_dif %>% filter(id %in% wine_id)) +
       aes(x = Quality,
-          fill = Quality.Factor) +
+          fill = `Quality Factor`) +
       geom_bar(width = 0.6, alpha = 0.5) +
       ggthemes::scale_fill_tableau()
     ggplotly(p, tooltip = 'text') %>% layout(dragmode = 'select')
@@ -404,8 +535,8 @@ app$callback(
     wine_id <- selected_data[[1]] %>% purrr::map_chr('text')
     
     b <- ggplot(wine_dif %>% filter(id %in% wine_id)) +
-      aes(x = Quality.Factor,
-          fill = Quality.Factor) +
+      aes(x = `Quality Factor`,
+          fill = `Quality Factor`) +
       geom_bar(aes(y = (..count..)/sum(..count..))) +
       theme(axis.text.x=element_blank()) +
       ggthemes::scale_fill_tableau()
@@ -415,16 +546,8 @@ app$callback(
 
 
 
-######################################
-## Wine Type Comparison Page - Eric ##
-######################################
-# Some additional variables my page needs.
-# The df Luka made breaks my code and I don't want to reformat
-wineEric <- read.csv("data/processed/wine_quality.csv")
-variables <- colnames(subset(wineEric, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric)))
-variablesNoUnits <- gsub("\\..\\..*","", variables)
-variablesNoUnits <- gsub("(..mg.dm)*","", variablesNoUnits)
-variablesNoUnits <- gsub("\\.","", variablesNoUnits)
+################################
+## Wine Type Comparison Page - Eric 
 
 Wine_Types_layout <- htmlDiv(
   list(
@@ -453,10 +576,10 @@ Wine_Types_layout <- htmlDiv(
                   htmlH5("Wine Type"),
                   dccChecklist(id = "winetype",
                                options = list(
-                                 list("label" = "White Wines", "value" = "white"),
-                                 list("label" = "Red Wines", "value" = "red")
+                                 list("label" = "White Wines", "value" = 'white'),
+                                 list("label" = "Red Wines", "value" = 'red')
                                ),
-                               value=list("red", "white"),
+                               value=list('white', 'red'),
                                labelStyle = list("display" = "inline-block")
                   )
                 ))
@@ -469,51 +592,24 @@ Wine_Types_layout <- htmlDiv(
               htmlH4("Choose Scatterplot Axes"),
               htmlH5("x-axis"),
               dccDropdown(id = "x-axis",
-                          options = list( #Couldn't figure out a list comprehension alternative
-                            list("label" = variables[1], "value" = variables[1]),
-                            list("label" = variables[2], "value" = variables[2]),
-                            list("label" = variables[3], "value" = variables[3]),
-                            list("label" = variables[4], "value" = variables[4]),
-                            list("label" = variables[5], "value" = variables[5]),
-                            list("label" = variables[6], "value" = variables[6]),
-                            list("label" = variables[7], "value" = variables[7]),
-                            list("label" = variables[8], "value" = variables[8]),
-                            list("label" = variables[9], "value" = variables[9]),
-                            list("label" = variables[10], "value" = variables[10]),
-                            list("label" = "Alcohol Percent", "value" = variables[11]),
-                            list("label" = variables[12], "value" = variables[12])
-                          ),
-                          value = variables[2]),
+                          options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
+                          value = 3),
               htmlH5("y-axis"),
               dccDropdown(
                 id = "y-axis",
-                options = list( #Couldn't figure out a list comprehension alternative
-                  list("label" = variables[1], "value" = variables[1]),
-                  list("label" = variables[2], "value" = variables[2]),
-                  list("label" = variables[3], "value" = variables[3]),
-                  list("label" = variables[4], "value" = variables[4]),
-                  list("label" = variables[5], "value" = variables[5]),
-                  list("label" = variables[6], "value" = variables[6]),
-                  list("label" = variables[7], "value" = variables[7]),
-                  list("label" = variables[8], "value" = variables[8]),
-                  list("label" = variables[9], "value" = variables[9]),
-                  list("label" = variables[10], "value" = variables[10]),
-                  list("label" = variables[11], "value" = variables[11]),
-                  list("label" = variables[12], "value" = variables[12])
-                ),
-                value = variables[1]
+                options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
+                value = 9
               ),
-              dccGraph(
-                id = "scatter",
-                figure = {})
+              dccGraph(id = "scatter")
             ))
           ))
         ),
         htmlBr()
         ),
-      className = "twelve columns")
+      className = "twelve columns"
     )
   )
+)
 
 # Make Graphs
 
@@ -523,23 +619,18 @@ app$callback(
        input("quality", "value")),
   function(winetype, quality){
     # Subset to our desired variable levels
-    winex <- subset(wineEric, Wine %in% winetype)
-    winex <- subset(winex, Quality.Factor.Numeric %in% quality)
-    winex <- subset(winex, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric))
-    if (quality == 1){ # The correlation plot breaks if only average quality chosen,
-      # since there is only one value
+    winex <- subset(wine, Wine %in% winetype)
+    winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    winex <- subset(winex, select = -c(Wine, `Quality Factor`, `Quality Factor Numeric`, `id`))
+    if (quality == 1) { # The correlation plot breaks if only average quality chosen since there is only one value (six)
       winex <- subset(winex, select = -c(Quality))
     }
-    # Janky regex to remove periods and units to make things more readable
-    colnames(winex) <- gsub("\\..\\..*","", colnames(winex))
-    colnames(winex) <- gsub("(..mg.dm)*","", colnames(winex))
-    colnames(winex) <- gsub("\\.","", colnames(winex))
+
     # Create a correlation matrix and reorder it alphabetically
     corr <- cor(winex)
-    order <- corrplot::corrMatOrder(corr, "alphabet")
+    order <- corrMatOrder(corr, "alphabet")
     corr <- corr[order,order]
-    p <-
-      ggcorrplot(corr,
+    p <- ggcorrplot(corr,
                  hc.order = TRUE,
                  type = "lower",
                  outline.color = "white",
@@ -554,15 +645,21 @@ app$callback(
                 input("y-axis", "value"),
                 input("winetype", "value"),
                 input("quality", "value")),
+
   function(x, y, winetype, quality){
     # Subset to our desired variable levels
-    winex <- subset(wineEric, Wine %in% winetype)
-    winex <- subset(winex, Quality.Factor.Numeric %in% quality)
-    p <- ggplot(winex, aes(x = !!sym(x), y = !!sym(y))) + geom_bin2d() +
+    winex <- subset(wine, Wine %in% winetype)
+    winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+
+    colx <- sym(colnames(winex)[x])
+    coly <- sym(colnames(winex)[y])
+
+    p <- ggplot(winex, aes(x = !!colx, y = !!coly)) + geom_bin2d() +
       scale_fill_gradient(low="lightgray", high = "darkred") +
       theme_minimal() +
       geom_smooth(method = lm)
-    ggplotly(p, height = 450, width = 425)%>% layout(margin())
+
+    ggplotly(p, height = 450, width = 425) %>% layout(margin())
   }
 )
 
@@ -663,6 +760,9 @@ app$callback(output = list(id='page-content', property = 'children'),
              display_page <- function(pathname) {
                if (pathname == '/WineVision/Quality-Factors') {
                  return(Quality_Factors_layout)
+               }
+               else if (pathname == "/WineVision/Quality-Distributions") {
+                 return(Quality_Distribution_layout)
                }
                else if (pathname == "/WineVision/Wine-Types") {
                  return(Wine_Types_layout)

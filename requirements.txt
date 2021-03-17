@@ -1,7 +1,14 @@
 dash
 dash_bootstrap_components
+
 plotly
 ggplot2
+tidyverse
+GGally
+ggcorrplot
+readr
+plyr
+glue
 
 gunicorn
 
