@@ -133,7 +133,7 @@ app$layout(
   )
 
 ################################
-## Table page
+## Eaw Data page
 
 page_size <- 10
 
@@ -141,14 +141,14 @@ table_layout<-htmlDiv(list(
   Header,
   dbcContainer(
     dbcRow(list(
-      dbcCol(htmlDiv(
-        dbcCard(
-          dbcCardBody
-          (list(
-            htmlH5("WineVision dataset", className = "Card title"),
-            htmlP("", className = "card-text")
-          )
-          )))),
+      # dbcCol(htmlDiv(
+      #   dbcCard(
+      #     dbcCardBody
+      #     (list(
+      #       htmlH5("WineVision dataset", className = "Card title"),
+      #       htmlP("", className = "card-text")
+      #     )
+      #     )))),
       htmlBr(),
       dbcCol(htmlDiv(
         dashDataTable(
@@ -173,7 +173,7 @@ table_layout<-htmlDiv(list(
           sort_by = list()
         )
         
-      ), width=3)
+      ), width=10)
     )))))
 
 
