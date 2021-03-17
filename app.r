@@ -430,7 +430,7 @@ learn_more_layout <- htmlDiv(
         htmlDiv(
           list(
             htmlH3('Motivation'),
-            htmlH6("With 36 billion bottles of wine produced each year, wine makers
+            htmlP("With 36 billion bottles of wine produced each year, wine makers
                     are constantly looking for ways to outperform the competition and
                     create the best wines they can. Portugal in particular is second
                     in the world for per-capita wine consumption and eleventh for
@@ -448,7 +448,7 @@ learn_more_layout <- htmlDiv(
       dccMarkdown(
         
     "
-    ### Welcome!
+    ### Welcome!!!
     Hello and thank you for stopping by the Wine Vision App! 
     
     Feel free to visit out [GitHub homebase](https://github.com/ubco-mds-2020-labs/WineVision-R-group8) for more information on the project. 
