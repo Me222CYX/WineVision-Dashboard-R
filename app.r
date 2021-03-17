@@ -401,7 +401,9 @@ app$callback(
     plot
   }
 )
-#Quality.Factor
+
+
+## Quality.Factor
 ################################
 ## Quality Factor Analysis Page - RAIN
 
@@ -455,7 +457,7 @@ Quality_Factors_layout <- htmlDiv(
                 dccGraph(
                   id = "plot-area"
                 )
-              ), className = "two-thirds column wind__speed__container"
+              ), className = "two-thirds column container"
             ),
             htmlDiv(
               list(
@@ -539,7 +541,9 @@ app$callback(
       aes(x = Quality,
           fill = `Quality Factor`) +
       geom_bar(width = 0.6, alpha = 0.5) +
-      ggthemes::scale_fill_tableau()
+      theme(legend.title=element_blank()) +
+      ggthemes::scale_fill_tableau() +
+      ggtitle(glue('<b>Counts in Each Quality Factor</b>'))
     ggplotly(p, tooltip = 'text') %>% layout(dragmode = 'select')
   }
 )
@@ -558,8 +562,9 @@ app$callback(
       aes(x = `Quality Factor`,
           fill = `Quality Factor`) +
       geom_bar(aes(y = (..count..)/sum(..count..))) +
-      theme(axis.text.x=element_blank()) +
-      ggthemes::scale_fill_tableau()
+      theme(axis.text.x=element_blank(), legend.title=element_blank()) +
+      ggthemes::scale_fill_tableau() + 
+      ggtitle(glue('<b>Percentage for Each Quality Factor</b>'))
     ggplotly(b, tooltip = 'y') %>% layout(dragmode = 'select')
   }
 )
@@ -805,5 +810,5 @@ app$callback(output = list(id='page-content', property = 'children'),
 #############################################
 
 
-app$run_server(host = '0.0.0.0', debug = T) # 0.0.0.0 Needed for Heroku
+app$run_server(host = '0.0.0.0') # 0.0.0.0 Needed for Heroku
 
