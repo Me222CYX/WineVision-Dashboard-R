@@ -531,5 +531,5 @@ app$callback(output = list(id='page-content', property = 'children'),
 ## RUN APP
 #############################################
 
-app$run_server(debug = T, dev_tools_hot_reload=FALSE)
+app$run_server(host = "0.0.0.0")
 
