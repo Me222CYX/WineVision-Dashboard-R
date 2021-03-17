@@ -233,10 +233,16 @@ app$callback(
 
 
 
-#################################
-## Quality Factor Analysis Page
+#############################################
+
+## Quality Factor Analysis Page - RAIN
+
+#############################################
+
+
 wine <- read.csv("data/processed/wine_quality.csv")
 wine$id <- as.character(1:nrow(wine))
+
 Quality_Factors_layout <- htmlDiv(
   list(
     Header,
@@ -337,7 +343,6 @@ Quality_Factors_layout <- htmlDiv(
         )
       ), className = "app__container"
     )
-
   )
 )
 
@@ -357,6 +362,7 @@ app$callback(
   }
 )
 
+
 app$callback(
   output = list(id='bar-plot', property='figure'),
   params = list(input(id='plot-area', property='selectedData'),
@@ -373,6 +379,7 @@ app$callback(
     ggplotly(p, tooltip = 'text') %>% layout(dragmode = 'select')
   }
 )
+
 
 app$callback(
   output = list(id='bar-plot2', property='figure'),
@@ -392,6 +399,8 @@ app$callback(
     ggplotly(b, tooltip = 'y') %>% layout(dragmode = 'select')
   }
 )
+
+
 
 ################################
 ## Wine Type Comparison Page
@@ -421,7 +430,7 @@ learn_more_layout <- htmlDiv(
         htmlDiv(
           list(
             htmlH3('Motivation'),
-            htmlP("With 36 billion bottles of wine produced each year, wine makers
+            htmlH6("With 36 billion bottles of wine produced each year, wine makers
                     are constantly looking for ways to outperform the competition and
                     create the best wines they can. Portugal in particular is second
                     in the world for per-capita wine consumption and eleventh for
