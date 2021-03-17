@@ -85,7 +85,11 @@ get_menu <- function() {
   }
 
 Header <- htmlDiv(list(get_header(), htmlBr(), get_menu()))
-
+Header_banner<-htmlDiv(list(get_header(), htmlBr(), get_menu(),htmlBr() ,htmlImg(
+  # https://elite-brands.com/blog/wine-ratings-q3/
+  src  =  "/assets/rating.png", width = "100%",
+  className = "app__menu__img"
+)))
 Menu <- htmlDiv(list(get_menu()))
 
 #############################################
@@ -171,7 +175,7 @@ app$layout(
 page_size <- 10
 
 table_layout<-htmlDiv(list(
-  Header,
+  Header_banner,
   htmlBr(),
   htmlH4(
     "Data Table:",
@@ -294,7 +298,7 @@ app$callback(
 
 Quality_Distribution_layout <- htmlDiv(
   list(
-    Header,
+    Header_banner,
     htmlDiv(
       list(
         htmlBr(),
@@ -567,7 +571,7 @@ app$callback(
 
 Wine_Types_layout <- htmlDiv(
   list(
-    Header,
+    Header_banner,
     htmlDiv(
       list(
         htmlBr(),
