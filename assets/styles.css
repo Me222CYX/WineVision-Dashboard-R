@@ -178,7 +178,10 @@ h4 {
   font-size: 1.8rem;
   line-height: 1.35;
   letter-spacing: -0.08rem;
-  background-color: #F4D03F;
+  background-image: linear-gradient(to bottom, #f3d4d4, rgba(0,0,0,0) 90%);
+  padding-left: 12px;
+  padding-top: 3px;
+  padding-bottom: 12px;
 } 
 
 h5 {

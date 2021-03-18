@@ -1,0 +1,169 @@
+
+```{r}
+library(ggplot2)
+library(plotly)
+library(plyr)
+library(glue)
+```
+
+
+```{r}
+df <- wine <- read.csv("../data/processed/wine_quality.csv")
+
+# need an extra ID column for linking plots ~ Rain
+wine$id <- as.character(1:nrow(wine))
+
+variables <- colnames(wine)
+variablesNoUnits <- gsub("\\.\\..*$","", variables) # Remove units
+variablesNoUnits <- gsub("\\."," ", variablesNoUnits) # Replace dots with spaces
+# IF THIS GENERATES A PARSE ERROR ANYWHERE, simply replace "varibale name with space" --> "`varibale name with space`"
+
+colnames(wine) <- variablesNoUnits
+
+# Units in order of variables
+units <- c(' ', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(mg/dm^3)', '(mg/dm^3)', '(g/cm^3)', ' ', '(g/dm^3)', '(%)', ' ', ' ', ' ')
+
+
+factors <- c(1, 13, 14, 15)
+wine[, -factors] <- as.numeric(unlist(wine[, -factors]))
+white <- wine[wine[,'Wine']=='white', ]
+red <- wine[wine[,'Wine']=='red', ]
+wine_type <- list('White' = white, 'Red' = red)
+
+
+mu_white <- ddply(white, "`Quality Factor`", numcolwise(mean))
+mu_red <- ddply(red, "`Quality Factor`",  numcolwise(mean))
+mu_type <- list(mu_white, mu_red)
+
+med_white <- ddply(white, "`Quality Factor`", numcolwise(median))
+med_red <- ddply(red, "`Quality Factor`",  numcolwise(median))
+med_type <- list(med_white, med_red)
+
+
+contmode <- function(vector) {
+  dens <- density(vector)
+  maxx = dens$x[which.max(dens$y)]
+  return(maxx)
+}
+
+mode_white <- ddply(white, "`Quality Factor`", numcolwise(contmode))
+mode_red <- ddply(red, "`Quality Factor`",  numcolwise(contmode))
+mode_type <- list(mode_white, mode_red)
+
+stats <- list('Mean'=mu_type, 'Median'=med_type, 'Mode'=mode_type)
+
+vars <- variable.names(wine)[-15] %>% as.vector()
+```
+
+```{r}
+### ORIGINAL OPERATION ###
+
+test <- function(variable, winetype, dist) {
+
+    coln <- sym(colnames(wine)[variable])
+
+
+
+    plot <- ggplot(wine_type[[winetype]], aes(x = !!coln, fill = `Quality Factor`)) + 
+    
+
+          #geom_boxplot(alpha = 0.4, aes(width=1)) +
+      
+        #geom_violin(aes(y = `Quality Factor`), stat = 'ydensity', draw_quantiles = TRUE) +
+      
+          geom_rug() +
+            
+      
+            
+            # Colour Scheme
+            ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
+
+            # Theme
+            theme_classic() + 
+            theme(plot.title = element_blank(),
+                  axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+                  legend.title = element_blank(),
+                  text = element_text(size = 16),
+                  element_line(size = 1))
+                  
+    return(plot)
+    
+  }
+
+
+test(2, 2, 'violin')
+```
+
+
+```{r}
+par(mfrow = c(2,2))
+
+density_plot(1, 2)
+density_plot(1, 4)
+density_plot(1, 8)
+density_plot(1, 10)
+
+density_plot(2, 3)
+density_plot(2, 5)
+density_plot(2, 7)
+density_plot(2, 9)
+
+
+```
+
+
+
+
+
+```{r}
+library(corrplot)
+
+eric <- function(x, y, winetype, quality) {
+  
+    winex <- subset(wine, Wine %in% winetype)
+    winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+
+    colx <- sym(colnames(winex)[x])
+    coly <- sym(colnames(winex)[y])
+
+    p <- ggplot(winex, aes(x = !!colx, y = !!coly)) + geom_bin2d() +
+      scale_fill_gradient(low="lightgray", high = "darkred") +
+      theme_minimal() +
+      geom_smooth(method = lm)
+    
+    return(p)
+}
+eric(2, 2, list('white', 'red'), list(0,1,2))
+```
+
+```{r}
+
+colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)[2:12]==col)))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
