@@ -601,12 +601,12 @@ app$callback(
     b <- ggplot(wine_dif %>% filter(id %in% wine_id)) +
       aes(x = `Quality Factor`,
           fill = `Quality Factor`) +
-      geom_bar(aes(y = (..count..)/sum(..count..)), alpha = 0.7) +
+      geom_bar(aes(y = (..count..)/sum(..count..)*100), alpha = 0.7) +
       theme_minimal() +
-      ylab('Proportion in the Selected Range') + 
+      ylab('% in the Selected Range') + 
       theme(axis.text.x=element_blank(), legend.title=element_blank(), legend.position="none", text = element_text(size = 14), plot.title = element_text(size=12)) + # removed legends since it squishes the plot. Interactivity on bar plots is minimal to none 
       ggthemes::scale_fill_tableau() + 
-      ggtitle(glue('<b>Proportion for Each Quality Factor</b>'))
+      ggtitle(glue('<b>Percentage for Each Quality Factor</b>'))
     ggplotly(b, tooltip = 'y') %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
 )
