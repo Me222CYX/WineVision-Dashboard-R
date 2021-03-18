@@ -546,14 +546,24 @@ app$callback(
                 input(id='wine-type', property='value')),
   
   function(xcol, ycol, type) {
+    
+    numx <- which(colnames(wine) == xcol)
+    numy <- which(colnames(wine) == ycol)
+    
+    colnx <- sym(colnames(wine)[numx])
+    colny <- sym(colnames(wine)[numy])
+    
     wine_dif <- wine %>% subset(Wine == type)
     scatter <- ggplot(wine_dif) + 
       aes(x = !!sym(xcol), y = !!sym(ycol), color = `Quality Factor`, text = id) + 
       geom_point(alpha = 0.7) + 
+      xlab(glue('{as.character(colnx)} {units[numx]}')) +
+      ylab(glue('{as.character(colny)} {units[numy]}')) + 
+      
       ggthemes::scale_color_tableau() +
       theme_minimal() + theme(text = element_text(size = 14), legend.title = element_blank())
     ggplotly(scatter, tooltip = 'text', height = 650) %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)',
-    legend = list(title=list(text='<b> Quality</b>'), x = 0.82, y = 1.1, tracegroupgap = 1, bgcolor = 'rgba(0,0,0,0)'))
+    legend = list(title=list(text='<b>Quality Factor</b>'), x = 0.82, y = 1.1, tracegroupgap = 1, bgcolor = 'rgba(0,0,0,0)'))
   }
 )
 
@@ -593,7 +603,8 @@ app$callback(
           fill = `Quality Factor`) +
       geom_bar(aes(y = (..count..)/sum(..count..)), alpha = 0.7) +
       theme_minimal() +
-      theme(axis.text.x=element_blank(), legend.title=element_blank(), legend.position="none", text = element_text(size = 12), plot.title = element_text(size=12)) + # removed legends since it squishes the plot. Interactivity on bar plots is minimal to none 
+      ylab('% in the Selected Range') + 
+      theme(axis.text.x=element_blank(), legend.title=element_blank(), legend.position="none", text = element_text(size = 14), plot.title = element_text(size=12)) + # removed legends since it squishes the plot. Interactivity on bar plots is minimal to none 
       ggthemes::scale_fill_tableau() + 
       ggtitle(glue('<b>Percentage for Each Quality Factor</b>'))
     ggplotly(b, tooltip = 'y') %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
@@ -844,5 +855,6 @@ app$callback(output = list(id='page-content', property = 'children'),
 #############################################
 
 
-app$run_server(host = '0.0.0.0', debug = T) # 0.0.0.0 Needed for Heroku
+app$run_server(debug = T) # 0.0.0.0 Needed for Heroku
 
+#host = '0.0.0.0', 
