@@ -43,7 +43,7 @@ get_header <- function() {
         list(
           htmlDiv(
             htmlP("WineVision Dashboard"),
-            className = "seven columns main-title"),
+            className = "seven columns main-title", style = list(marginTop = '1em', background = 'rgba(0,0,0,0)')),
         htmlDiv(
           list(
             dccLink("Learn more",
@@ -101,15 +101,6 @@ df <- wine <- read.csv("data/processed/wine_quality.csv")
 wine$id <- as.character(1:nrow(wine))
 
 
-# df <- wine_quality <- read.csv("data/processed/wine_quality.csv")
-# gsub("(mg/dm^3)","",colnames(df),fixed = TRUE)->cn
-# gsub("(g/dm^3)","",cn,fixed = TRUE)->cn
-# gsub("(g/cm^3)","",cn,fixed = TRUE)->cn
-# gsub("(%)","",cn,fixed = TRUE)->cn
-# str_trim(cn, side = c("right"))->cn
-# colnames(df)<-cn
-
-
 # Eric's code - I like it and would like to use it on my page so it's here now ~ Luka :)
 variables <- colnames(wine) # Just rename all vars instead of some <--> subset(df, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric)))
 
@@ -162,7 +153,7 @@ app$layout(
   htmlDiv(
     list(
       # URL
-      dccLocation(id = 'url', refresh=TRUE), # Changed from false
+      dccLocation(id = 'url', refresh=FALSE), # Changed from false
       #Content
       htmlDiv(id='page-content')
       )
@@ -302,56 +293,81 @@ Quality_Distribution_layout <- htmlDiv(
     htmlDiv(
       list(
         htmlBr(),
-        htmlH4(
-          "Wine Selection:",
-          className = "graph__title"
-          ),
+        dbcRow(
+          list(
+            dbcCol(htmlDiv(), width = 1),
+            dbcCol(htmlDiv(htmlH4("Wine Selection:", className = "graph__title")), width = 3),
+            dbcCol(htmlDiv(htmlH4("Variable Selection:", className = "graph__title")), width = 3),
+            dbcCol(htmlDiv(htmlH4("Statistic Selection:", className = "graph__title")), width = 3),
+            dbcCol(htmlDiv(), width = 1)
+          ), justify ="center"
+        ),
         htmlBr(),
-        dccDropdown(
-          id = 'wine-select',
-          options = list(list(label = 'White Wine', value = 1),
-                        list(label = 'Red Wine', value = 2)),
-          value = 1
-          ),
+        dbcRow(
+          list(
+            dbcCol(htmlDiv(), width = 1),
+            dbcCol(htmlDiv(dccDropdown(
+                        id = 'wine-select',
+                        options = list(list(label = 'White Wine', value = 1), list(label = 'Red Wine', value = 2)),
+                        value = 1)), width = 3),
+            dbcCol(htmlDiv(dccDropdown(
+                        id = 'col-select',
+                        options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
+                        value = 9)), width = 3),
+            dbcCol(htmlDiv(dccDropdown(
+                        id = 'stat',
+                        options = list(list(label = 'Mean', value = 'Mean'), list(label = 'Median', value = 'Median'), list(label = 'Mode', value = 'Mode')),
+                        value = 'Mode')), width = 3),
+            dbcCol(htmlDiv(), width = 1)
+          ), justify ="center"
+        ),
         htmlBr(),
-        dccDropdown(
-          id = 'col-select',
-          options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
-          value = 9
-          ),
+        dbcRow(
+          list(
+            dbcCol(dccGraph(id = 'density'), width = 8)
+          ), justify="center"
+        ),
         htmlBr(),
-        dccDropdown(
-          id = 'stat',
-          options = list(list(label = 'Mean', value = 'Mean'),
-                        list(label = 'Median', value = 'Median'),
-                        list(label = 'Mode', value = 'Mode')),
-          value = 'Mean'
-          ),
+        dbcRow(
+          list(
+            dbcCol(dccGraph(id = 'stackeddensity'), width = 8)
+          ), justify="center"
+        ),
         htmlBr(),
-        dccGraph(id = 'density'),
-        htmlBr(),
-        dccGraph(id = 'stackeddensity')
-      ),
+        dbcRow(htmlDiv(style=list(marginBottom = '10em'))),
+        htmlBr()
+      )
     )
   )
 )
-
+             
 
 app$callback(
   output(id = 'density', property = 'figure'),
   params = list(input(id = 'col-select', 'value'), 
                 input(id = 'wine-select', 'value'),
                 input(id = 'stat', 'value')),
+                #input(id = 'dist-marginal', 'value'),
 
   function(variable, winetype, stat) {
 
     coln <- sym(colnames(wine)[variable])
 
     plot <- ggplot(wine_type[[winetype]], aes(x = !!coln, fill = `Quality Factor`)) + 
-            geom_density(alpha = 0.4) + ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
-            geom_vline(data=stats[[stat]][[winetype]], aes(xintercept=!!coln, color=`Quality Factor`), linetype="dashed", size=0.5) +
+            geom_density(alpha = 0.4) + 
+            geom_vline(data=stats[[stat]][[winetype]],
+                       aes(xintercept=!!coln, color = `Quality Factor`),
+                       linetype="dashed", size=0.7) +
+
+            # Labels
             ggtitle(glue('Density Type: <b>Overlaid</b>')) +
-            theme_classic() +
+            ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
+            
+            # Colour Scheme
+            ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
+
+            # Theme
+            theme_classic() + 
             theme(plot.title = element_text(size=14, hjust = 0.01),
                   axis.text.y = element_blank(), axis.ticks.y = element_blank(),
                   legend.title = element_blank(),
@@ -361,10 +377,10 @@ app$callback(
 
     plot <- ggplotly(plot)
     plot <- plot %>% layout(
-      #clickmode='event+select',
-      legend = list(title=list(text='<b> Quality Levels </b>\n'), x = 0.85, y = 1, itemwidth = 40, tracegroupgap = 13),
-      autosize = FALSE,
-      width = 1100, height = 500)
+      paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)',
+      legend = list(title=list(text='<b> Quality Levels </b>\n'), x = 0.82, y = 1, itemwidth = 40, tracegroupgap = 12, bgcolor = 'rgba(0,0,0,0)'),
+      autosize = FALSE)#,
+      #width = 1100, height = 500)
 
     plot
   }
@@ -381,10 +397,20 @@ app$callback(
     coln <- sym(colnames(wine)[variable])
 
     plot <- ggplot(wine_type[[winetype]], aes(x = !!coln, fill = `Quality Factor`)) + 
-            geom_density(alpha = 0.4, position="stack") + ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
-            geom_vline(data=stats[[stat]][[winetype]], aes(xintercept=!!coln, color=`Quality Factor`), linetype="dashed", size=0.5) +
+            geom_density(alpha = 0.4, position="stack") + 
+            geom_vline(data=stats[[stat]][[winetype]],
+                       aes(xintercept=!!coln, color = `Quality Factor`),
+                       linetype="dashed", size=0.7) +
+
+            # Labels
             ggtitle(glue('Density Type: <b>Stacked</b>')) +
-            theme_classic() +
+            ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
+
+            # Colour Scheme
+            ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
+
+            # Theme
+            theme_classic() + 
             theme(plot.title = element_text(size=14, hjust = 0.01),
                   axis.text.y = element_blank(), axis.ticks.y = element_blank(),
                   legend.title = element_blank(),
@@ -394,9 +420,10 @@ app$callback(
 
     plot <- ggplotly(plot)
     plot <- plot %>% layout(
-      legend = list(title=list(text='<b> Quality Levels </b>\n'), x = 0.85, y = 1, itemwidth = 40, tracegroupgap = 13),
-      autosize = FALSE,
-      width = 1100, height = 500)
+      paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)',
+      legend = list(title=list(text='<b> Quality Levels </b>\n'), x = 0.82, y = 1, itemwidth = 40, tracegroupgap = 12, bgcolor = 'rgba(0,0,0,0)'),
+      autosize = FALSE)#,
+      #width = 1100, height = 500)
 
     plot
   }
@@ -427,6 +454,7 @@ Quality_Factors_layout <- htmlDiv(
             )
           ), className = "app__header"
         ),
+        htmlBr(),
         htmlDiv(
           list(
             # scatter plot
@@ -438,21 +466,19 @@ Quality_Factors_layout <- htmlDiv(
                     htmlH5('X-axis'),
                     dccDropdown(
                       id='xcol-select',
-                      options = wine %>% select_if(is.numeric) %>%
-                        colnames %>%
-                        purrr::map(function(xcol) list(label = xcol, value = xcol)), 
-                      value='Chlorides'),
+                      options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = col)),
+                      value='Alcohol'),
                     htmlH5('Y-axis'),
                     dccDropdown(
                       id='ycol-select',
-                      options = wine %>% select_if(is.numeric) %>%
-                        colnames %>%
-                        purrr::map(function(ycol) list(label = ycol, value = ycol)), 
-                      value='pH'),
+                      options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = col)), 
+                      value='Density'),
                     htmlBr(),
                     htmlH4("Interactive Plots:", className = "graph__title"),
                     htmlBr(),
-                    htmlH4("Drag your mouse to select a range!"))
+                    htmlH5("Drag your mouse to select a range!"),
+                    htmlBr() 
+                    )
                 ),
                 dccGraph(
                   id = "plot-area"
@@ -525,8 +551,9 @@ app$callback(
       aes(x = !!sym(xcol), y = !!sym(ycol), color = `Quality Factor`, text = id) + 
       geom_point(alpha = 0.7) + 
       ggthemes::scale_color_tableau() +
-      theme_minimal()
-    ggplotly(scatter, tooltip = 'text') %>% layout(dragmode = 'select')
+      theme_minimal() + theme(text = element_text(size = 14), legend.title = element_blank())
+    ggplotly(scatter, tooltip = 'text', height = 650) %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)',
+    legend = list(title=list(text='<b> Quality</b>'), x = 0.82, y = 1.1, tracegroupgap = 1, bgcolor = 'rgba(0,0,0,0)'))
   }
 )
 
@@ -544,10 +571,10 @@ app$callback(
           fill = `Quality Factor`) +
       geom_bar(width = 0.6, alpha = 0.7) +
       theme_minimal() +
-      theme(legend.title=element_blank()) +
+      theme(legend.title=element_blank(), legend.position="none", text = element_text(size = 14), plot.title = element_text(size=12)) + # removed legends since it squishes the plot. Interactivity on bar plots is minimal to none 
       ggthemes::scale_fill_tableau() +
       ggtitle(glue('<b>Counts in Each Quality Factor</b>'))
-    ggplotly(p, tooltip = 'text') %>% layout(dragmode = 'select')
+    ggplotly(p, tooltip = 'text') %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
 )
 
@@ -566,10 +593,10 @@ app$callback(
           fill = `Quality Factor`) +
       geom_bar(aes(y = (..count..)/sum(..count..)), alpha = 0.7) +
       theme_minimal() +
-      theme(axis.text.x=element_blank(), legend.title=element_blank()) +
+      theme(axis.text.x=element_blank(), legend.title=element_blank(), legend.position="none", text = element_text(size = 12), plot.title = element_text(size=12)) + # removed legends since it squishes the plot. Interactivity on bar plots is minimal to none 
       ggthemes::scale_fill_tableau() + 
       ggtitle(glue('<b>Percentage for Each Quality Factor</b>'))
-    ggplotly(b, tooltip = 'y') %>% layout(dragmode = 'select')
+    ggplotly(b, tooltip = 'y') %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
 )
 
@@ -613,22 +640,23 @@ Wine_Types_layout <- htmlDiv(
                   )
                 ))
               )),
-              htmlBr(),
+              htmlBr(), htmlBr(),
               dccGraph(
                 id = "matrix")
             )),
             dbcCol(list(
               htmlH4("Choose Scatterplot Axes"),
-              htmlH5("x-axis"),
+              htmlH5("X-axis"),
               dccDropdown(id = "x-axis",
                           options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
                           value = 3),
-              htmlH5("y-axis"),
+              htmlH5("Y-axis"),
               dccDropdown(
                 id = "y-axis",
                 options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
                 value = 9
               ),
+              htmlBr(),
               dccGraph(id = "scatter")
             ))
           ))
@@ -663,8 +691,8 @@ app$callback(
                  hc.order = TRUE,
                  type = "lower",
                  outline.color = "white",
-                 color = c("darkblue", "lightgray", "darkred"))
-    ggplotly(p, height = 550, width = 550) %>% layout(margin())
+                 color = c("darkblue", "lightgray", "darkred")) + theme(text = element_text(size = 16))
+    ggplotly(p, height = 550, width = 550) %>% layout(paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')#margin())
   }
 )
 
@@ -685,10 +713,10 @@ app$callback(
 
     p <- ggplot(winex, aes(x = !!colx, y = !!coly)) + geom_bin2d() +
       scale_fill_gradient(low="lightgray", high = "darkred") +
-      theme_minimal() +
+      theme_minimal() + theme(text = element_text(size = 12)) +
       geom_smooth(method = lm)
 
-    ggplotly(p, height = 450, width = 425) %>% layout(margin())
+    ggplotly(p, height = 425, width = 425) %>% layout(paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
 )
 
@@ -814,5 +842,5 @@ app$callback(output = list(id='page-content', property = 'children'),
 #############################################
 
 
-app$run_server(host = '0.0.0.0') # 0.0.0.0 Needed for Heroku
+app$run_server(host = '0.0.0.0', debug = T) # 0.0.0.0 Needed for Heroku
 
