@@ -603,10 +603,10 @@ app$callback(
           fill = `Quality Factor`) +
       geom_bar(aes(y = (..count..)/sum(..count..)), alpha = 0.7) +
       theme_minimal() +
-      ylab('% in the Selected Range') + 
+      ylab('Proportion in the Selected Range') + 
       theme(axis.text.x=element_blank(), legend.title=element_blank(), legend.position="none", text = element_text(size = 14), plot.title = element_text(size=12)) + # removed legends since it squishes the plot. Interactivity on bar plots is minimal to none 
       ggthemes::scale_fill_tableau() + 
-      ggtitle(glue('<b>Percentage for Each Quality Factor</b>'))
+      ggtitle(glue('<b>Proportion for Each Quality Factor</b>'))
     ggplotly(b, tooltip = 'y') %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
 )
@@ -727,7 +727,7 @@ app$callback(
       theme_minimal() + theme(text = element_text(size = 12)) +
       geom_smooth(method = lm) +
       xlab(glue('{as.character(colx)} {units[x]}')) +
-      ylab(glue('{as.character(colx)} {units[x]}'))
+      ylab(glue('{as.character(coly)} {units[x]}'))
 
     ggplotly(p, height = 425, width = 425) %>% layout(paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
