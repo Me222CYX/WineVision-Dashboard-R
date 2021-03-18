@@ -714,7 +714,9 @@ app$callback(
     p <- ggplot(winex, aes(x = !!colx, y = !!coly)) + geom_bin2d() +
       scale_fill_gradient(low="lightgray", high = "darkred") +
       theme_minimal() + theme(text = element_text(size = 12)) +
-      geom_smooth(method = lm)
+      geom_smooth(method = lm) +
+      xlab(glue('{as.character(colx)} {units[x]}')) +
+      ylab(glue('{as.character(colx)} {units[x]}'))
 
     ggplotly(p, height = 425, width = 425) %>% layout(paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
