@@ -165,6 +165,8 @@ app$layout(
 
 page_size <- 10
 
+summarystats <- read.csv("reports/summarystats.csv")
+
 table_layout<-htmlDiv(list(
   Header_banner,
   htmlBr(),
@@ -217,7 +219,8 @@ table_layout<-htmlDiv(list(
           sort_by = list()
         )
         
-      ), width=10)
+      ),
+      width=10)
     ))))))
 
 
