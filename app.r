@@ -629,25 +629,27 @@ Wine_Types_layout <- htmlDiv(
               dbcRow(list(
                 dbcCol(list(
                   htmlH5("Quality"),
-                  dccChecklist(id = "quality",
+                  dccRadioItems(id = "quality",
                                options = list(
                                  list("label" = "Below Average", "value" = 0),
                                  list("label" = "Average", "value" = 1),
-                                 list("label" = "Above Average", "value" = 2)
+                                 list("label" = "Above Average", "value" = 2),
+                                 list("label" = "All", "value" = 3)
                                ),
-                               value = list(0,1,2),
+                               value = 3,
                                labelStyle = list("display" = "inline-block")
                   )
                 )),
                 dbcCol(list(
                   htmlH5("Wine Type"),
-                  dccChecklist(id = "winetype",
+                  dccRadioItems(id = "winetype",
                                options = list(
                                  list("label" = "White Wines", "value" = 'white'),
                                  list("label" = "Red Wines", "value" = 'red')
                                ),
-                               value=list('white', 'red'),
-                               labelStyle = list("display" = "inline-block")
+                               value= 'white',
+                               labelStyle = list("display" = "inline-block"),
+                               className = "radioItem"
                   )
                 ))
               )),
@@ -688,7 +690,9 @@ app$callback(
   function(winetype, quality){
     # Subset to our desired variable levels
     winex <- subset(wine, Wine %in% winetype)
-    winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    if(quality != 3){ # Quality level 3 is all wine types
+      winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    }
     winex <- subset(winex, select = -c(Wine, `Quality Factor`, `Quality Factor Numeric`, `id`))
     if (quality == 1) { # The correlation plot breaks if only average quality chosen since there is only one value (six)
       winex <- subset(winex, select = -c(Quality))
@@ -717,7 +721,9 @@ app$callback(
   function(x, y, winetype, quality){
     # Subset to our desired variable levels
     winex <- subset(wine, Wine %in% winetype)
-    winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    if(quality != 3){ # Quality level 3 is all wine qualities
+      winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    }
 
     colx <- sym(colnames(winex)[x])
     coly <- sym(colnames(winex)[y])
