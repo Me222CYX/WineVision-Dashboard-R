@@ -157,6 +157,8 @@ a:active {
   border-right-style: none;
   padding: 5px 10px;
   font-size:  29px;;
+  display:inline-block; 
+  margin-left: 40px;
 }
 
 .rowrow {
