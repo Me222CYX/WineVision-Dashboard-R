@@ -107,7 +107,14 @@ li {
   padding-left: 30px;
 }
 
-
+.radioItem {
+  margin: 0 10px 0 10px;
+  padding: 0px;
+  width: 200px;
+  margin-left: 0px !important;
+  padding-left: 10px;
+  margin-right: 10px;
+}
 
 .logo {
   height: 50px;
