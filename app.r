@@ -44,19 +44,19 @@ get_header <- function() {
           htmlDiv(
             htmlP("WineVision Dashboard"),
             className = "seven columns main-title", style = list(marginTop = '1em', background = 'rgba(0,0,0,0)')),
-        htmlDiv(
-          list(
-            dccLink("Learn more",
-                    href = "/WineVision/learn-more",
-                    className = "learn-more-button")),
-          className = "twelve columns")
+          htmlDiv(
+            list(
+              dccLink("Learn more",
+                      href = "/WineVision/learn-more",
+                      className = "learn-more-button")),
+            className = "twelve columns")
         ),
-      className = "twelve columns")
-      ),
+        className = "twelve columns")
+    ),
     className = "row"
-    )
+  )
   return(header)
-  }
+}
 
 
 get_menu <- function() {
@@ -78,11 +78,11 @@ get_menu <- function() {
         "Raw Data",
         href="/WineVision/Wine-table",
         className="tab")
-      ),
+    ),
     className="rowrow alltab "
-    )
+  )
   return(menu)
-  }
+}
 
 Header <- htmlDiv(list(get_header(), htmlBr(), get_menu()))
 Header_banner<-htmlDiv(list(get_header(), htmlBr(), get_menu(),htmlBr() ,htmlImg(
@@ -156,9 +156,9 @@ app$layout(
       dccLocation(id = 'url', refresh=FALSE), # Changed from false
       #Content
       htmlDiv(id='page-content')
-      )
     )
   )
+)
 
 ################################
 ## Raw Data page
@@ -169,9 +169,27 @@ summarystats <- read.csv("reports/summarystats.csv")
 
 table_layout<-htmlDiv(list(
   Header_banner,
+  
   htmlBr(),
   htmlH4(
-    "Data Table:",
+    "Summary Statistics Table:",
+    className = "graph__title"
+  ),
+  dashDataTable(
+    id = "summarystats table",
+    style_table = list(overflowX = 'scroll'),
+    columns = lapply(colnames(summarystats), 
+                     function(colName){
+                       list(
+                         id = colName,
+                         name = colName
+                       )
+                     }),
+    data = df_to_list(summarystats)
+  ),
+  htmlBr(),
+  htmlH4(
+    "Raw Data Table:",
     className = "graph__title"
   ),
   htmlBr(),
@@ -185,7 +203,7 @@ table_layout<-htmlDiv(list(
     #   
     # )),
     
-  
+    
     dbcRow(list(
       # dbcCol(htmlDiv(
       #   dbcCard(
@@ -219,8 +237,7 @@ table_layout<-htmlDiv(list(
           sort_by = list()
         )
         
-      ),
-      width=10)
+      ))
     ))))))
 
 
@@ -310,17 +327,17 @@ Quality_Distribution_layout <- htmlDiv(
           list(
             dbcCol(htmlDiv(), width = 1),
             dbcCol(htmlDiv(dccDropdown(
-                        id = 'wine-select',
-                        options = list(list(label = 'White Wine', value = 1), list(label = 'Red Wine', value = 2)),
-                        value = 1)), width = 3),
+              id = 'wine-select',
+              options = list(list(label = 'White Wine', value = 1), list(label = 'Red Wine', value = 2)),
+              value = 1)), width = 3),
             dbcCol(htmlDiv(dccDropdown(
-                        id = 'col-select',
-                        options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
-                        value = 9)), width = 3),
+              id = 'col-select',
+              options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
+              value = 9)), width = 3),
             dbcCol(htmlDiv(dccDropdown(
-                        id = 'stat',
-                        options = list(list(label = 'Mean', value = 'Mean'), list(label = 'Median', value = 'Median'), list(label = 'Mode', value = 'Mode')),
-                        value = 'Mode')), width = 3),
+              id = 'stat',
+              options = list(list(label = 'Mean', value = 'Mean'), list(label = 'Median', value = 'Median'), list(label = 'Mode', value = 'Mode')),
+              value = 'Mode')), width = 3),
             dbcCol(htmlDiv(), width = 1)
           ), justify ="center"
         ),
@@ -343,48 +360,48 @@ Quality_Distribution_layout <- htmlDiv(
     )
   )
 )
-             
+
 
 app$callback(
   output(id = 'density', property = 'figure'),
   params = list(input(id = 'col-select', 'value'), 
                 input(id = 'wine-select', 'value'),
                 input(id = 'stat', 'value')),
-                #input(id = 'dist-marginal', 'value'),
-
+  #input(id = 'dist-marginal', 'value'),
+  
   function(variable, winetype, stat) {
-
+    
     coln <- sym(colnames(wine)[variable])
-
+    
     plot <- ggplot(wine_type[[winetype]], aes(x = !!coln, fill = `Quality Factor`)) + 
-            geom_density(alpha = 0.4) + 
-            geom_vline(data=stats[[stat]][[winetype]],
-                       aes(xintercept=!!coln, color = `Quality Factor`),
-                       linetype="dashed", size=0.7) +
-
-            # Labels
-            ggtitle(glue('Density Type: <b>Overlaid</b>')) +
-            ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
-            
-            # Colour Scheme
-            ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
-
-            # Theme
-            theme_classic() + 
-            theme(plot.title = element_text(size=14, hjust = 0.01),
-                  axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-                  legend.title = element_blank(),
-                  text = element_text(size = 16),
-                  element_line(size = 1))
-                  
-
+      geom_density(alpha = 0.4) + 
+      geom_vline(data=stats[[stat]][[winetype]],
+                 aes(xintercept=!!coln, color = `Quality Factor`),
+                 linetype="dashed", size=0.7) +
+      
+      # Labels
+      ggtitle(glue('Density Type: <b>Overlaid</b>')) +
+      ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
+      
+      # Colour Scheme
+      ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
+      
+      # Theme
+      theme_classic() + 
+      theme(plot.title = element_text(size=14, hjust = 0.01),
+            axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+            legend.title = element_blank(),
+            text = element_text(size = 16),
+            element_line(size = 1))
+    
+    
     plot <- ggplotly(plot)
     plot <- plot %>% layout(
       paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)',
       legend = list(title=list(text='<b> Quality Levels </b>\n'), x = 0.82, y = 1, itemwidth = 40, tracegroupgap = 12, bgcolor = 'rgba(0,0,0,0)'),
       autosize = FALSE)#,
-      #width = 1100, height = 500)
-
+    #width = 1100, height = 500)
+    
     plot
   }
 )
@@ -394,40 +411,40 @@ app$callback(
   params = list(input(id = 'col-select', 'value'), 
                 input(id = 'wine-select', 'value'),
                 input(id = 'stat', 'value')),
-
+  
   function(variable, winetype, stat) {
-
+    
     coln <- sym(colnames(wine)[variable])
-
+    
     plot <- ggplot(wine_type[[winetype]], aes(x = !!coln, fill = `Quality Factor`)) + 
-            geom_density(alpha = 0.4, position="stack") + 
-            geom_vline(data=stats[[stat]][[winetype]],
-                       aes(xintercept=!!coln, color = `Quality Factor`),
-                       linetype="dashed", size=0.7) +
-
-            # Labels
-            ggtitle(glue('Density Type: <b>Stacked</b>')) +
-            ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
-
-            # Colour Scheme
-            ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
-
-            # Theme
-            theme_classic() + 
-            theme(plot.title = element_text(size=14, hjust = 0.01),
-                  axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-                  legend.title = element_blank(),
-                  text = element_text(size = 16),
-                  element_line(size = 1))
-                  
-
+      geom_density(alpha = 0.4, position="stack") + 
+      geom_vline(data=stats[[stat]][[winetype]],
+                 aes(xintercept=!!coln, color = `Quality Factor`),
+                 linetype="dashed", size=0.7) +
+      
+      # Labels
+      ggtitle(glue('Density Type: <b>Stacked</b>')) +
+      ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
+      
+      # Colour Scheme
+      ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
+      
+      # Theme
+      theme_classic() + 
+      theme(plot.title = element_text(size=14, hjust = 0.01),
+            axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+            legend.title = element_blank(),
+            text = element_text(size = 16),
+            element_line(size = 1))
+    
+    
     plot <- ggplotly(plot)
     plot <- plot %>% layout(
       paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)',
       legend = list(title=list(text='<b> Quality Levels </b>\n'), x = 0.82, y = 1, itemwidth = 40, tracegroupgap = 12, bgcolor = 'rgba(0,0,0,0)'),
       autosize = FALSE)#,
-      #width = 1100, height = 500)
-
+    #width = 1100, height = 500)
+    
     plot
   }
 )
@@ -481,7 +498,7 @@ Quality_Factors_layout <- htmlDiv(
                     htmlBr(),
                     htmlH5("Drag your mouse to select a range!"),
                     htmlBr() 
-                    )
+                  )
                 ),
                 dccGraph(
                   id = "plot-area"
@@ -566,7 +583,7 @@ app$callback(
       ggthemes::scale_color_tableau() +
       theme_minimal() + theme(text = element_text(size = 14), legend.title = element_blank())
     ggplotly(scatter, tooltip = 'text', height = 650) %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)',
-    legend = list(title=list(text='<b>Quality Factor</b>'), x = 0.82, y = 1.1, tracegroupgap = 1, bgcolor = 'rgba(0,0,0,0)'))
+                                                                 legend = list(title=list(text='<b>Quality Factor</b>'), x = 0.82, y = 1.1, tracegroupgap = 1, bgcolor = 'rgba(0,0,0,0)'))
   }
 )
 
@@ -633,26 +650,26 @@ Wine_Types_layout <- htmlDiv(
                 dbcCol(list(
                   htmlH5("Quality"),
                   dccRadioItems(id = "quality",
-                               options = list(
-                                 list("label" = "Below Average", "value" = 0),
-                                 list("label" = "Average", "value" = 1),
-                                 list("label" = "Above Average", "value" = 2),
-                                 list("label" = "All", "value" = 3)
-                               ),
-                               value = 3,
-                               labelStyle = list("display" = "inline-block")
+                                options = list(
+                                  list("label" = "Below Average", "value" = 0),
+                                  list("label" = "Average", "value" = 1),
+                                  list("label" = "Above Average", "value" = 2),
+                                  list("label" = "All", "value" = 3)
+                                ),
+                                value = 3,
+                                labelStyle = list("display" = "inline-block")
                   )
                 )),
                 dbcCol(list(
                   htmlH5("Wine Type"),
                   dccRadioItems(id = "winetype",
-                               options = list(
-                                 list("label" = "White Wines", "value" = 'white'),
-                                 list("label" = "Red Wines", "value" = 'red')
-                               ),
-                               value= 'white',
-                               labelStyle = list("display" = "inline-block"),
-                               className = "radioItem"
+                                options = list(
+                                  list("label" = "White Wines", "value" = 'white'),
+                                  list("label" = "Red Wines", "value" = 'red')
+                                ),
+                                value= 'white',
+                                labelStyle = list("display" = "inline-block"),
+                                className = "radioItem"
                   )
                 ))
               )),
@@ -678,7 +695,7 @@ Wine_Types_layout <- htmlDiv(
           ))
         ),
         htmlBr()
-        ),
+      ),
       className = "twelve columns"
     )
   )
@@ -700,16 +717,16 @@ app$callback(
     if (quality == 1) { # The correlation plot breaks if only average quality chosen since there is only one value (six)
       winex <- subset(winex, select = -c(Quality))
     }
-
+    
     # Create a correlation matrix and reorder it alphabetically
     corr <- cor(winex)
     order <- corrMatOrder(corr, "alphabet")
     corr <- corr[order,order]
     p <- ggcorrplot(corr,
-                 hc.order = TRUE,
-                 type = "lower",
-                 outline.color = "white",
-                 color = c("darkblue", "lightgray", "darkred")) + theme(text = element_text(size = 16))
+                    hc.order = TRUE,
+                    type = "lower",
+                    outline.color = "white",
+                    color = c("darkblue", "lightgray", "darkred")) + theme(text = element_text(size = 16))
     ggplotly(p, height = 550, width = 550) %>% layout(paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')#margin())
   }
 )
@@ -720,24 +737,24 @@ app$callback(
                 input("y-axis", "value"),
                 input("winetype", "value"),
                 input("quality", "value")),
-
+  
   function(x, y, winetype, quality){
     # Subset to our desired variable levels
     winex <- subset(wine, Wine %in% winetype)
     if(quality != 3){ # Quality level 3 is all wine qualities
       winex <- subset(winex, `Quality Factor Numeric` %in% quality)
     }
-
+    
     colx <- sym(colnames(winex)[x])
     coly <- sym(colnames(winex)[y])
-
+    
     p <- ggplot(winex, aes(x = !!colx, y = !!coly)) + geom_bin2d() +
       scale_fill_gradient(low="lightgray", high = "darkred") +
       theme_minimal() + theme(text = element_text(size = 12)) +
       geom_smooth(method = lm) +
       xlab(glue('{as.character(colx)} {units[x]}')) +
       ylab(glue('{as.character(coly)} {units[x]}'))
-
+    
     ggplotly(p, height = 425, width = 425) %>% layout(paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
 )
@@ -763,22 +780,21 @@ learn_more_layout <- htmlDiv(
                     Given that physicochemical components are fundamental to a wine's
                     quality, those who understand this aspect of wine will have a
                     greater edge into crafting an enjoyable and profitable product.")
-            ),
+          ),
           className="product"
-          )
-        ),
-      className="twelve columns"
+        )
       ),
+      className="twelve columns"
+    ),
     htmlDiv(
       dccMarkdown(
         
-    "
+        "
     ### Welcome!!!
     Hello and thank you for stopping by the Wine Vision App! 
     
     Feel free to visit out [GitHub homebase](https://github.com/ubco-mds-2020-labs/WineVision-R-group8) for more information on the project. 
     
-
     ### The problem
     Wine making has always been a traditional practice passed down for many generations; yet, some of wine's secrets are still a mystery to most people, even wine producers! So how are we supposed to craft the perfect wine without knowing what makes it perfect (speaking from both a consumer and business perspective)?
     
@@ -788,8 +804,6 @@ learn_more_layout <- htmlDiv(
     
     ### The solution
     **Our interactive dashboard will allow users to explore how a number of physicochemical variables interact and determine the subjective quality of a wine. Wine producers, wine enthusiasts, and curious individuals can all make use of this dashboard to discover these elusive relationships.** 
-
-
     ### App Description
     The dashboard has four pages:
     
@@ -808,7 +822,6 @@ learn_more_layout <- htmlDiv(
     Data was collected from Vinho Verde wines originating from the northwest regions of Portugal. These wines have a medium alcohol content, and are particularly sought for their freshness in summer months. Each wine sample was evaluated by at least three sensory assessors (using blind tastes) who graded the wine from 0 (worst) to 10 (best). The final quality score is given by the median of these evaluations.
     
     The dataset consists of the physiochemical composition and sensory test results for 4898 white and 1599 red wine samples which were collected from May 2004 to February 2007. Each wine sample contains 12 variables that provide the acidity properties (fixed acidity, volatile acidity, citric acid, pH), sulphides contents (free sulfur dioxide, total sulfur dioxide, sulphates), density related properties (residual sugar, alcohol, density), and salt content (chlorides). It also contains quality as the response variable. In order to improve classification analyses, we define a new variable, quality_factor. Any wine with a quality score less than six is classified as “below average”, a score of 6 is “average”, and above 6 is “above average”.
-
     ### A Fun Usage Scenario
     Alice is a winemaker in British Columbia's Okanagan Valley. She would like to create a new summer wine and hopes to take inspiration from the Vinho Verde wines, known for their refreshing qualities. Alice seeks our dashboard to better understand what wine attributes she should focus on to provide a tasting experience comparable to the very best Vinho Verde wines. However, there are some physicochemical properties she has little control over due to the soils and grape species available to her. Due to the above average alkalinity of Okanagan soil, she knows that her wines will typically be less acidic than true Vinho Verde wines, and the altitude means the chloride content will be lower as well. She wants to try to optimize the variables she has control over to make the best wine possible. She looks to our dashboard to see how Vinho Verde wines with higher pH and lower chloride content tend to fare. Looking at the interactive scatterplots, she sees that wines which have values within her possible ranges for these variables tend to be of very poor quality when they are also high in residual sugar, but less sweet wines are of good quality. She then consults the histograms and sees that there are not very many wines available that have these properties, so she knows that she will not have much direct competition should she go forward with this design. A few years later, she released this wine to broad critical acclaim and millions in profit.
     
@@ -818,16 +831,14 @@ learn_more_layout <- htmlDiv(
     
     Please note that it's very important to us that we maintain a positive and supportive environment for everyone who wants to participate. When you join us we ask that you follow our [code of conduct](https://github.com/ubco-mds-2020-labs/WineVision/blob/main/CODE_OF_CONDUCT.md) in all interactions both on and offline.
     
-
     ### Contact us
     If you want to report a problem or suggest an enhancement we'd love for you to [open an issue](https://github.com/ubco-mds-2020-labs/WineVision/issues) at this github repository because then we can get right on it.
     
-
     ### Data Citation
     Paulo Cortez, University of Minho, Guimarães, Portugal, http://www3.dsi.uminho.pt/pcortez
     A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal @2009
     "
-))))
+      ))))
 #style = list("font-size"="1.625rem")
 
 #############################################
