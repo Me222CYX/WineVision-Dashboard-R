@@ -90,6 +90,21 @@ if(wine.tree$frame$splits[1] == ""){
 plot(wine.tree); text(wine.tree)
 ```
 
+```{r}
+winetable <- wine[2:12]
+winetable <- as.data.frame(summary(winetable))
+# Remove empty first column
+winetable <- winetable[c(2,3)]
 
+winetable <- separate(winetable, Freq, into = c("Statistic", "Value"), sep = ":")
+
+winetable <- spread(winetable, key = Statistic, value = Value)
+
+names(winetable)[1] <- "Variables"
+```
+
+```{r}
+write.csv(winetable, "summarystats.csv")
+```
 
 
