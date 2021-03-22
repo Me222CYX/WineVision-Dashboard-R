@@ -546,14 +546,24 @@ app$callback(
                 input(id='wine-type', property='value')),
   
   function(xcol, ycol, type) {
+    
+    numx <- which(colnames(wine) == xcol)
+    numy <- which(colnames(wine) == ycol)
+    
+    colnx <- sym(colnames(wine)[numx])
+    colny <- sym(colnames(wine)[numy])
+    
     wine_dif <- wine %>% subset(Wine == type)
     scatter <- ggplot(wine_dif) + 
       aes(x = !!sym(xcol), y = !!sym(ycol), color = `Quality Factor`, text = id) + 
       geom_point(alpha = 0.7) + 
+      xlab(glue('{as.character(colnx)} {units[numx]}')) +
+      ylab(glue('{as.character(colny)} {units[numy]}')) + 
+      
       ggthemes::scale_color_tableau() +
       theme_minimal() + theme(text = element_text(size = 14), legend.title = element_blank())
     ggplotly(scatter, tooltip = 'text', height = 650) %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)',
-    legend = list(title=list(text='<b> Quality</b>'), x = 0.82, y = 1.1, tracegroupgap = 1, bgcolor = 'rgba(0,0,0,0)'))
+    legend = list(title=list(text='<b>Quality Factor</b>'), x = 0.82, y = 1.1, tracegroupgap = 1, bgcolor = 'rgba(0,0,0,0)'))
   }
 )
 
@@ -591,9 +601,10 @@ app$callback(
     b <- ggplot(wine_dif %>% filter(id %in% wine_id)) +
       aes(x = `Quality Factor`,
           fill = `Quality Factor`) +
-      geom_bar(aes(y = (..count..)/sum(..count..)), alpha = 0.7) +
+      geom_bar(aes(y = (..count..)/sum(..count..)*100), alpha = 0.7) +
       theme_minimal() +
-      theme(axis.text.x=element_blank(), legend.title=element_blank(), legend.position="none", text = element_text(size = 12), plot.title = element_text(size=12)) + # removed legends since it squishes the plot. Interactivity on bar plots is minimal to none 
+      ylab('% in the Selected Range') + 
+      theme(axis.text.x=element_blank(), legend.title=element_blank(), legend.position="none", text = element_text(size = 14), plot.title = element_text(size=12)) + # removed legends since it squishes the plot. Interactivity on bar plots is minimal to none 
       ggthemes::scale_fill_tableau() + 
       ggtitle(glue('<b>Percentage for Each Quality Factor</b>'))
     ggplotly(b, tooltip = 'y') %>% layout(dragmode = 'select', paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
@@ -618,25 +629,27 @@ Wine_Types_layout <- htmlDiv(
               dbcRow(list(
                 dbcCol(list(
                   htmlH5("Quality"),
-                  dccChecklist(id = "quality",
+                  dccRadioItems(id = "quality",
                                options = list(
                                  list("label" = "Below Average", "value" = 0),
                                  list("label" = "Average", "value" = 1),
-                                 list("label" = "Above Average", "value" = 2)
+                                 list("label" = "Above Average", "value" = 2),
+                                 list("label" = "All", "value" = 3)
                                ),
-                               value = list(0,1,2),
+                               value = 3,
                                labelStyle = list("display" = "inline-block")
                   )
                 )),
                 dbcCol(list(
                   htmlH5("Wine Type"),
-                  dccChecklist(id = "winetype",
+                  dccRadioItems(id = "winetype",
                                options = list(
                                  list("label" = "White Wines", "value" = 'white'),
                                  list("label" = "Red Wines", "value" = 'red')
                                ),
-                               value=list('white', 'red'),
-                               labelStyle = list("display" = "inline-block")
+                               value= 'white',
+                               labelStyle = list("display" = "inline-block"),
+                               className = "radioItem"
                   )
                 ))
               )),
@@ -677,7 +690,9 @@ app$callback(
   function(winetype, quality){
     # Subset to our desired variable levels
     winex <- subset(wine, Wine %in% winetype)
-    winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    if(quality != 3){ # Quality level 3 is all wine types
+      winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    }
     winex <- subset(winex, select = -c(Wine, `Quality Factor`, `Quality Factor Numeric`, `id`))
     if (quality == 1) { # The correlation plot breaks if only average quality chosen since there is only one value (six)
       winex <- subset(winex, select = -c(Quality))
@@ -706,7 +721,9 @@ app$callback(
   function(x, y, winetype, quality){
     # Subset to our desired variable levels
     winex <- subset(wine, Wine %in% winetype)
-    winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    if(quality != 3){ # Quality level 3 is all wine qualities
+      winex <- subset(winex, `Quality Factor Numeric` %in% quality)
+    }
 
     colx <- sym(colnames(winex)[x])
     coly <- sym(colnames(winex)[y])
@@ -714,7 +731,9 @@ app$callback(
     p <- ggplot(winex, aes(x = !!colx, y = !!coly)) + geom_bin2d() +
       scale_fill_gradient(low="lightgray", high = "darkred") +
       theme_minimal() + theme(text = element_text(size = 12)) +
-      geom_smooth(method = lm)
+      geom_smooth(method = lm) +
+      xlab(glue('{as.character(colx)} {units[x]}')) +
+      ylab(glue('{as.character(coly)} {units[x]}'))
 
     ggplotly(p, height = 425, width = 425) %>% layout(paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
   }
@@ -842,5 +861,6 @@ app$callback(output = list(id='page-content', property = 'children'),
 #############################################
 
 
-app$run_server(host = '0.0.0.0', debug = T) # 0.0.0.0 Needed for Heroku
+app$run_server(host = '0.0.0.0') # 0.0.0.0 Needed for Heroku
 
+#host = '0.0.0.0'
