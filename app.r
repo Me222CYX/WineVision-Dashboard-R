@@ -828,6 +828,7 @@ learn_more_layout <- htmlDiv(
                   children = htmlDiv(
                     className = "control-tab",
                     children = list(
+                      htmlBr(),
                       htmlH4(
                         className = "what-is", 
                         children = "What is Our Motivation?"
@@ -836,27 +837,31 @@ learn_more_layout <- htmlDiv(
                         id = "app-page-header",
                         children = list(
                           htmlImg(
-                            src = "/assets/GitHub-Mark-64px.png"
+                            src = "/assets/GitHub-Mark-64px.png",
+                            style = list(paddingLeft = "10px")
                           ),
                           htmlA(
                             id = "gh-link",
                             children = list("View on GitHub"),
                             href = "https://github.com/ubco-mds-2020-labs/WineVision-R-group8",
-                            style = list(color = "grey")
+                            style = list(color = "grey", paddingLeft = "10px")
                           )
                         )
                       ),
+                      htmlBr(),
                       htmlP("With 36 billion bottles of wine produced each year, 
                                     wine makers are constantly looking for ways to outperform 
                                     the competition and create the best wines they can. Portugal 
                                     in particular is second in the world for per-capita wine 
                                     consumption and eleventh for wine production, creating over 
-                                    600,000 litres per year."
+                                    600,000 litres per year.",
+                            style = list(paddingLeft = "10px")
                       ),
                       htmlP("Given that physicochemical components 
                                     are fundamental to a wine's quality, those who understand this 
                                     aspect of wine will have a greater edge into crafting an enjoyable 
-                                    and profitable product."
+                                    and profitable product.",
+                            style = list(paddingLeft = "10px")
                       )
                     )
                   )
@@ -867,6 +872,7 @@ learn_more_layout <- htmlDiv(
                   children = htmlDiv(
                     className = "control-tab",
                     children = list(
+                      htmlBr(),
                       htmlH4(
                         className = "what-is2", 
                         children = "What is Our Problem?"
@@ -875,22 +881,25 @@ learn_more_layout <- htmlDiv(
                                     for many generations; yet, some of wine's secrets are still a 
                                     mystery to most people, even wine producers! So how are we supposed 
                                     to craft the perfect wine without knowing what makes it perfect 
-                                    (speaking from both a consumer and business perspective)?"
+                                    (speaking from both a consumer and business perspective)?",
+                            style = list(paddingLeft = "10px")
                       ),
                       htmlP("In general, wine quality evaluation is assessed by physicochemical 
                                     tests and sensory analysis. It's the roadmap to improving a wine. 
                                     However the relationship between physicochemical structure and 
                                     subjective quality is complex and no individual component can be 
                                     used to accurately predict a wine's quality. The interactions are 
-                                    as important as the components themselves."
+                                    as important as the components themselves.",
+                            style = list(paddingLeft = "10px")
                       ),
                       htmlP("From a business perspective, producers are constantly looking for 
                                     ways to outperform the competition by creating the best wine they can.
                                     Those who understand the fundamental physiochemical aspects of wine 
                                     will have a greater edge into crafting an enjoyable and profitable 
-                                    product. So, we introduce to you the Wine Vision Dashboard."
+                                    product. So, we introduce to you the Wine Vision Dashboard.",
+                            style = list(paddingLeft = "10px")
                       ),
-                      
+                      htmlBr(),
                       htmlH4(
                         className = "what-is2", 
                         children = "What is Our Solution?"
@@ -899,7 +908,8 @@ learn_more_layout <- htmlDiv(
                                     of physicochemical variables interact and determine the subjective 
                                     quality of a wine. Wine producers, wine enthusiasts, and curious 
                                     individuals can all make use of this dashboard to discover these 
-                                    elusive relationships."
+                                    elusive relationships.",
+                            style = list(paddingLeft = "10px")
                       )
                     )
                   )
@@ -910,6 +920,7 @@ learn_more_layout <- htmlDiv(
                   children = htmlDiv(
                     className = "control-tab",
                     children = list(
+                      htmlBr(),
                       htmlH4(
                         className = "what-is3", 
                         children = "The Data We Are Using"
@@ -920,7 +931,8 @@ learn_more_layout <- htmlDiv(
                                     months. Each wine sample was evaluated by at least three sensory 
                                     assessors (using blind tastes) who graded the wine from 0 (worst) 
                                     to 10 (best). The final quality score is given by the median of 
-                                    these evaluations."
+                                    these evaluations.",
+                            style = list(paddingLeft = "10px")
                       ),
                       htmlP("The dataset consists of the physiochemical composition and sensory 
                                     test results for 4898 white and 1599 red wine samples which were 
@@ -933,9 +945,10 @@ learn_more_layout <- htmlDiv(
                                     In order to improve classification analyses, we define a new 
                                     variable, quality_factor. Any wine with a quality score less than 
                                     six is classified as below average, a score of 6 is average, 
-                                    and above 6 is above average."
+                                    and above 6 is above average.",
+                            style = list(paddingLeft = "10px")
                       ),
-                      
+                      htmlBr(),
                       htmlH4(
                         className = "what-is3", 
                         children = "Data Citation"
@@ -943,7 +956,8 @@ learn_more_layout <- htmlDiv(
                       htmlP("Paulo Cortez, University of Minho, Guimarães, Portugal, 
                                     http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
                                     T. Matos and J. Reis, Viticulture Commission of the Vinho Verde 
-                                    Region(CVRVV), Porto, Portugal @2009"
+                                    Region(CVRVV), Porto, Portugal @2009",
+                            style = list(paddingLeft = "10px")
                       )
                     )
                   )
@@ -1000,6 +1014,6 @@ app$callback(output = list(id='page-content', property = 'children'),
 #############################################
 
 
-app$run_server(host = '0.0.0.0') # 0.0.0.0 Needed for Heroku
+app$run_server(debug = T) # 0.0.0.0 Needed for Heroku
 
 #host = '0.0.0.0'
