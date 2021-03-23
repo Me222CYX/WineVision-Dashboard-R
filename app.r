@@ -1018,6 +1018,6 @@ app$callback(output = list(id='page-content', property = 'children'),
 #############################################
 
 
-app$run_server(debug = T) # 0.0.0.0 Needed for Heroku
+app$run_server(host = '0.0.0.0') # 0.0.0.0 Needed for Heroku
 
 #host = '0.0.0.0'
