@@ -75,7 +75,7 @@ get_menu <- function() {
         href="/WineVision/Quality-Factors",
         className="tab"),
       dccLink(
-        "Prediciton",
+        "Prediction",
         href = "/WineVision/Prediction",
         className = "tab"),
       dccLink(
