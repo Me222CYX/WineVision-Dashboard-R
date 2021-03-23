@@ -85,7 +85,7 @@ get_menu <- function() {
 }
 
 Header <- htmlDiv(list(get_header(), htmlBr(), get_menu()))
-Header_banner<-htmlDiv(list(get_header(), htmlBr(), get_menu(),htmlBr() ,htmlImg(
+Header_banner <- htmlDiv(list(get_header(), htmlBr(), get_menu(),htmlBr() ,htmlImg(
   # https://elite-brands.com/blog/wine-ratings-q3/
   src  =  "/assets/rating.png", width = "100%",
   className = "app__menu__img"
@@ -738,17 +738,18 @@ app$callback(
 
 learn_more_layout <- htmlDiv(
   list(
-    htmlBr(),
-    htmlDiv(
-      list(
-        Header_banner,
-        htmlDiv(
-          children = list(
+    # htmlBr(),
+    # htmlDiv(
+    #   list(
+    #     htmlDiv(
+    #       children = list(
             htmlDiv(
               id = "page-content",
-              style = list(paddingTop = "50px", minHeight = "calc(100vh - 70px)"),
+              style = list(paddingTop = "0px", minHeight = "calc(100vh - 70px)"),
               className = "app-body",
               children = list(
+                Header_banner,
+                htmlBr(),
                 htmlDiv(
                   id = "mhp-control-tabs",
                   className = "control-tabs",
@@ -892,7 +893,9 @@ learn_more_layout <- htmlDiv(
               )
             )
           )
-        )))))
+        )
+#     ))
+# ))
 
 #############################################
 ## APP PAGE CALLBACKS
