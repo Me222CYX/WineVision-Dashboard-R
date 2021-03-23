@@ -862,6 +862,12 @@ learn_more_layout <- htmlDiv(
                                     aspect of wine will have a greater edge into crafting an enjoyable 
                                     and profitable product.",
                             style = list(paddingLeft = "10px")
+                      ),
+                      htmlBr(),
+                      htmlImg(
+                        # https://www.heremagazine.com/articles/vinho-verde-is-the-new-rose/
+                        src  =  "/assets/HereMag.png", width = "100%",
+                        className = "app__menu__img"
                       )
                     )
                   )
@@ -962,8 +968,6 @@ learn_more_layout <- htmlDiv(
                     )
                   )
                 )
-                
-                
               )
             )
           )
