@@ -177,7 +177,7 @@ table_layout<-htmlDiv(list(
         dashDataTable(
           style_table = list(overflowX = 'scroll'),
           id = 'table-sorting-filtering',
-          columns = lapply(sort(colnames(df)),
+          columns = lapply(sort(colnames(wine)),
                            function(colName){
                              list(
                                id = colName,
@@ -197,7 +197,11 @@ table_layout<-htmlDiv(list(
         )
         
       ))
-    ))))))
+    )))),
+    htmlBr(),
+    htmlBr(),
+    htmlBr()
+    ))
 
 
 app$callback(
@@ -208,7 +212,7 @@ app$callback(
                 input(id = 'table-sorting-filtering', property = 'filter_query')),
   function(page_current, page_size, sort_by, filters) {
     
-    subdf <- df
+    subdf <- wine
     # filter
     if(filters != "") {
       
