@@ -875,8 +875,8 @@ learn_more_layout <- htmlDiv(
                                 className = "what-is3", 
                                 children = "Data Citation"
                               ),
-                              htmlP("Paulo Cortez, University of Minho, Guimarães, Portugal, 
-                                    http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
+                              htmlP("Paulo Cortez, University of Minho, Guimar?es, Portugal, 
+                                     http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
                                     T. Matos and J. Reis, Viticulture Commission of the Vinho Verde 
                                     Region(CVRVV), Porto, Portugal @2009"
                               )
