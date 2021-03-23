@@ -100,53 +100,8 @@ Menu <- htmlDiv(list(get_menu()))
 ## DATA
 #############################################
 
-df <- wine <- read.csv("data/processed/wine_quality.csv")
-# need an extra ID column for linking plots ~ Rain
-wine$id <- as.character(1:nrow(wine))
 
-
-# Eric's code - I like it and would like to use it on my page so it's here now ~ Luka :)
-variables <- colnames(wine) # Just rename all vars instead of some <--> subset(df, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric)))
-
-variablesNoUnits <- gsub("\\.\\..*$","", variables) # Remove units
-variablesNoUnits <- gsub("\\."," ", variablesNoUnits) # Replace dots with spaces
-# IF THIS GENERATES A PARSE ERROR ANYWHERE, simply replace "varibale name with space" --> "`varibale name with space`"
-
-colnames(wine) <- variablesNoUnits
-# Units in order of variables
-units <- c(' ', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(mg/dm^3)', '(mg/dm^3)', '(g/cm^3)', ' ', '(g/dm^3)', '(%)', ' ', ' ', ' ')
-
-## Luka
-# I could probably put this in the wrangling file
-factors <- c(1, 13, 14, 15)
-wine[, -factors] <- as.numeric(unlist(wine[, -factors]))
-white <- wine[wine[,'Wine']=='white', ]
-red <- wine[wine[,'Wine']=='red', ]
-wine_type <- list('White' = white, 'Red' = red)
-
-
-mu_white <- ddply(white, "`Quality Factor`", numcolwise(mean))
-mu_red <- ddply(red, "`Quality Factor`",  numcolwise(mean))
-mu_type <- list(mu_white, mu_red)
-
-med_white <- ddply(white, "`Quality Factor`", numcolwise(median))
-med_red <- ddply(red, "`Quality Factor`",  numcolwise(median))
-med_type <- list(med_white, med_red)
-
-
-contmode <- function(vector) {
-  dens <- density(vector)
-  maxx = dens$x[which.max(dens$y)]
-  return(maxx)
-}
-
-mode_white <- ddply(white, "`Quality Factor`", numcolwise(contmode))
-mode_red <- ddply(red, "`Quality Factor`",  numcolwise(contmode))
-mode_type <- list(mode_white, mode_red)
-
-stats <- list('Mean'=mu_type, 'Median'=med_type, 'Mode'=mode_type)
-
-vars <- variable.names(wine)[-15] %>% as.vector()
+source("data/Data_Compiler (r).R")
 
 
 #############################################
@@ -959,7 +914,7 @@ learn_more_layout <- htmlDiv(
                         className = "what-is3", 
                         children = "Data Citation"
                       ),
-                      htmlP("Paulo Cortez, University of Minho, Guimarães, Portugal, 
+                      htmlP("Paulo Cortez, University of Minho, Guimarï¿½es, Portugal, 
                                     http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
                                     T. Matos and J. Reis, Viticulture Commission of the Vinho Verde 
                                     Region(CVRVV), Porto, Portugal @2009",
