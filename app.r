@@ -75,6 +75,10 @@ get_menu <- function() {
         href="/WineVision/Quality-Factors",
         className="tab"),
       dccLink(
+        "Prediciton",
+        href = "/WineVision/Prediction",
+        className = "tab"),
+      dccLink(
         "Raw Data",
         href="/WineVision/Wine-table",
         className="tab")
@@ -739,6 +743,40 @@ app$callback(
   }
 )
 
+###############################
+## PREDICTION
+###############################
+
+prediction_layout <- htmlDiv(
+  list(
+    Header_banner,
+    htmlDiv(
+      list(
+        htmlBr(),
+  dbcContainer(
+  dbcRow(
+    dbcCol(list( # Variable selection
+      htmlH6("This page is a work in progress"),
+      htmlH5("Physiochemical Properties"),
+      dccDropdown(id = "variables",
+                  options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
+                  value = c(3,9,12),
+                  multi = T),
+      htmlH5("Wine Type"),
+      dccRadioItems(id = "winetype",
+                    options = list(
+                      list("label" = "White Wines", "value" = "white"),
+                      list("label" = "Red Wines", "value" = "red")
+                    ),
+                    value="red"
+      ),
+      htmlImg(
+        id = "treepng", src = "/assets/tree.png", width = "100%", height = "600px"
+      )
+    ))
+  )
+)))))
+
 ################################
 ## Learn More Page
 
@@ -848,6 +886,9 @@ app$callback(output = list(id='page-content', property = 'children'),
                }
                else if (pathname == "/WineVision/Wine-table") {
                  return(table_layout)
+               }
+               else if (pathname == "/WineVision/Prediction"){
+                 return(prediction_layout)
                }
                else {
                  return(Wine_Types_layout)
