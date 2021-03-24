@@ -153,25 +153,7 @@ table_layout<-htmlDiv(list(
   ),
   htmlBr(),
   dbcContainer(list(
-    # dbcRow(
-    # htmlDiv(list(
-    #   htmlH4(
-    #     "Row data:",
-    #     className = "graph__title"
-    #   ))
-    #   
-    # )),
-    
-    
     dbcRow(list(
-      # dbcCol(htmlDiv(
-      #   dbcCard(
-      #     dbcCardBody
-      #     (list(
-      #       htmlH5("WineVision dataset", className = "Card title"),
-      #       htmlP("", className = "card-text")
-      #     )
-      #     )))),
       htmlBr(),
       dbcCol(htmlDiv(
         dashDataTable(
@@ -723,11 +705,10 @@ app$callback(
 )
 
 ###############################
-## PREDICTION
+# Future Additions
 ###############################
 
 
-#Future Additions
 prediction_layout <- htmlDiv(
   list(
     Header_banner,
@@ -761,7 +742,9 @@ prediction_layout <- htmlDiv(
         )))))
 
 ################################
-## Learn More Page
+## Introduction
+################################
+
 
 learn_more_layout <- htmlDiv(
   list(
@@ -981,6 +964,6 @@ app$callback(output = list(id='page-content', property = 'children'),
 #############################################
 
 
-app$run_server(debug = T) # 0.0.0.0 Needed for Heroku
+app$run_server(host = '0.0.0.0') # 0.0.0.0 Needed for Heroku
 
 #host = '0.0.0.0'
