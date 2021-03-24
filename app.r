@@ -198,10 +198,10 @@ table_layout<-htmlDiv(list(
         
       ))
     )))),
-    htmlBr(),
-    htmlBr(),
-    htmlBr()
-    ))
+  htmlBr(),
+  htmlBr(),
+  htmlBr()
+))
 
 
 app$callback(
@@ -732,29 +732,29 @@ prediction_layout <- htmlDiv(
     htmlDiv(
       list(
         htmlBr(),
-  dbcContainer(
-  dbcRow(
-    dbcCol(list( # Variable selection
-      htmlH6("This page is a work in progress"),
-      htmlH5("Physiochemical Properties"),
-      dccDropdown(id = "variables",
-                  options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
-                  value = c(3,9,12),
-                  multi = T),
-      htmlH5("Wine Type"),
-      dccRadioItems(id = "winetype",
-                    options = list(
-                      list("label" = "White Wines", "value" = "white"),
-                      list("label" = "Red Wines", "value" = "red")
-                    ),
-                    value="red"
-      ),
-      htmlImg(
-        id = "treepng", src = "/assets/tree.png", width = "100%", height = "600px"
-      )
-    ))
-  )
-)))))
+        dbcContainer(
+          dbcRow(
+            dbcCol(list( # Variable selection
+              htmlH6("This page is a work in progress"),
+              htmlH5("Physiochemical Properties"),
+              dccDropdown(id = "variables",
+                          options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
+                          value = c(3,9,12),
+                          multi = T),
+              htmlH5("Wine Type"),
+              dccRadioItems(id = "winetype",
+                            options = list(
+                              list("label" = "White Wines", "value" = "white"),
+                              list("label" = "Red Wines", "value" = "red")
+                            ),
+                            value="red"
+              ),
+              htmlImg(
+                id = "treepng", src = "/assets/tree.png", width = "100%", height = "600px"
+              )
+            ))
+          )
+        )))))
 
 ################################
 ## Learn More Page
@@ -918,13 +918,8 @@ learn_more_layout <- htmlDiv(
                         className = "what-is3", 
                         children = "Data Citation"
                       ),
-<<<<<<< HEAD
-                      htmlP("Paulo Cortez, University of Minho, Guimar?es, Portugal, 
-                                     http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
-=======
                       htmlP("Paulo Cortez, University of Minho, Guimar�es, Portugal, 
                                     http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
->>>>>>> ce85a3817bfdda3cabff815a16207bcf5dee4974
                                     T. Matos and J. Reis, Viticulture Commission of the Vinho Verde 
                                     Region(CVRVV), Porto, Portugal @2009",
                             style = list(paddingLeft = "10px")
