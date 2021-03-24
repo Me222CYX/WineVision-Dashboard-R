@@ -127,62 +127,50 @@ page_size <- 10
 summarystats <- read.csv("reports/summarystats.csv")
 
 table_layout<-htmlDiv(list(
+
   Header_banner,
+
+  htmlBr(),
+
+  htmlH4("Summary Statistics Table:", className = "graph__title"),
+
+  htmlDiv(list(dbcCol(htmlDiv(
+    dashDataTable(
+      id = "summarystats table",
+      style_table = list(overflowX = 'scroll'),
+      columns = lapply(colnames(summarystats), 
+                      function(colName){
+                        list(
+                          id = colName,
+                          name = colName
+                        )
+                      }),
+      data = df_to_list(summarystats))
+  )))),
+
+  htmlBr(),
   
+  htmlH4("Raw Data Table:", className = "graph__title"),
+
   htmlBr(),
-  htmlH4(
-    "Summary Statistics Table:",
-    className = "graph__title"
-  ),
-  dashDataTable(
-    id = "summarystats table",
-    style_table = list(overflowX = 'scroll'),
-    columns = lapply(colnames(summarystats), 
-                     function(colName){
-                       list(
-                         id = colName,
-                         name = colName
-                       )
-                     }),
-    data = df_to_list(summarystats)
-  ),
-  htmlBr(),
-  htmlH4(
-    "Raw Data Table:",
-    className = "graph__title"
-  ),
-  htmlBr(),
-  dbcContainer(list(
-    dbcRow(list(
-      htmlBr(),
-      dbcCol(htmlDiv(
-        dashDataTable(
-          style_table = list(overflowX = 'scroll'),
-          id = 'table-sorting-filtering',
-          columns = lapply(sort(colnames(wine)),
-                           function(colName){
-                             list(
-                               id = colName,
-                               name = colName
-                             )
-                           }),
-          page_current = 0,
-          page_size = page_size,
-          page_action = 'custom',
-          
-          filter_action = 'custom',
-          filter_query = '',
-          
-          sort_action = 'custom',
-          sort_mode = 'multi',
-          sort_by = list()
-        )
-        
-      ))
-    )))),
-  htmlBr(),
-  htmlBr(),
-  htmlBr()
+
+  htmlDiv(list(dbcCol(htmlDiv(
+    dashDataTable(
+      style_table = list(overflowX = 'scroll'),
+      id = 'table-sorting-filtering',
+      columns = lapply(sort(colnames(wine)), function(colName){list(id = colName,name = colName)}),
+      page_current = 0,
+      page_size = page_size,
+      page_action = 'custom',
+                  
+      filter_action = 'custom',
+      filter_query = '',
+                  
+      sort_action = 'custom',
+      sort_mode = 'multi',
+      sort_by = list())
+    ), style=list(marginBottom = '15em')
+  )))
 ))
 
 
@@ -286,7 +274,7 @@ Quality_Distribution_layout <- htmlDiv(
             dbcCol(htmlDiv(), width = 1)
           ), justify ="center"
         ),
-        htmlBr(),
+        htmlBr(), htmlBr(),
         dbcRow(
           list(
             dbcCol(dccGraph(id = 'density'), width = 8)
@@ -299,7 +287,7 @@ Quality_Distribution_layout <- htmlDiv(
           ), justify="center"
         ),
         htmlBr(),
-        dbcRow(htmlDiv(style=list(marginBottom = '10em'))),
+        dbcRow(htmlDiv(style=list(marginBottom = '12em'))),
         htmlBr()
       )
     )
@@ -326,7 +314,7 @@ app$callback(
       
       # Labels
       ggtitle(glue('Density Type: <b>Overlaid</b>')) +
-      ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
+      xlab(glue('{as.character(coln)} {units[variable]}')) +
       
       # Colour Scheme
       ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
@@ -334,7 +322,7 @@ app$callback(
       # Theme
       theme_classic() + 
       theme(plot.title = element_text(size=14, hjust = 0.01),
-            axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+            axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), axis.line.y = element_blank(),
             legend.title = element_blank(),
             text = element_text(size = 16),
             element_line(size = 1))
@@ -369,7 +357,7 @@ app$callback(
       
       # Labels
       ggtitle(glue('Density Type: <b>Stacked</b>')) +
-      ylab('Density') + xlab(glue('{as.character(coln)} {units[variable]}')) +
+      xlab(glue('{as.character(coln)} {units[variable]}')) +
       
       # Colour Scheme
       ggthemes::scale_fill_tableau() + scale_color_manual(values = c("#4E79A7", "#F28E2B", "#E15759")) +
@@ -377,7 +365,7 @@ app$callback(
       # Theme
       theme_classic() + 
       theme(plot.title = element_text(size=14, hjust = 0.01),
-            axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+            axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), axis.line.y = element_blank(),
             legend.title = element_blank(),
             text = element_text(size = 16),
             element_line(size = 1))
@@ -470,7 +458,7 @@ Quality_Factors_layout <- htmlDiv(
                           options = list(list(label = 'White Wine', value = 'white'),
                                          list(label = 'Red Wine', value = 'red')),
                           value = 'white',
-                          labelStyle = list(display = 'inline-block')
+                          labelStyle = list(display = 'inline-block')#, class = 'radioItem'
                         )
                       ), className = "radioItem"
                     ),
@@ -483,18 +471,12 @@ Quality_Factors_layout <- htmlDiv(
                 htmlBr(),
                 htmlDiv(
                   list(
-                    htmlDiv(
-                      list(
-                        htmlH4(
-                          "% Quality Factors", className = "graph__title"
-                        )
-                      )
-                    ),
+                    htmlDiv(list(htmlH4("% Quality Factors", className = "graph__title"))),
                     dccGraph(
                       id = "bar-plot2")
                   ), className = "graph__container second"
                 )
-              ), className = "one-third column histogram__direction"
+              ), className = "one-third column histogram__direction", style=list(marginBottom = '15em')
             )
           ), className = "app__content"
         )
@@ -599,10 +581,11 @@ Wine_Types_layout <- htmlDiv(
                                   list("label" = "Below Average", "value" = 0),
                                   list("label" = "Average", "value" = 1),
                                   list("label" = "Above Average", "value" = 2),
-                                  list("label" = "All", "value" = 3)
+                                  list("label" = "All Levels", "value" = 3)
                                 ),
                                 value = 3,
-                                labelStyle = list("display" = "inline-block")
+                                labelStyle = list("display" = "inline-block"),
+                                className = "radioItem"
                   )
                 )),
                 dbcCol(list(
@@ -641,7 +624,7 @@ Wine_Types_layout <- htmlDiv(
         ),
         htmlBr()
       ),
-      className = "twelve columns"
+      className = "twelve columns", style=list(marginBottom = '15em')
     )
   )
 )
@@ -718,26 +701,33 @@ prediction_layout <- htmlDiv(
         dbcContainer(
           dbcRow(
             dbcCol(list( # Variable selection
-              dbcAlert("This page is a work in progress for future development", color="primary"),
-
-              htmlH5("Physiochemical Properties"),
+              dbcAlert("This feature is a work in progress for future development.", color="primary"),
+              dbcAlert("Idea: Interpretable machine learning!", color="primary"),
+              dbcAlert("Users will be able to select variables of interest, then fit categorical classification trees to the data. If no variables are selected, all variables will be considered as a default.", color="primary"),
+              htmlBr(),
+              htmlH5("Select Physicochemical Properties (optional)"),
+              htmlBr(),
               dccDropdown(id = "variables",
                           options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
                           value = c(3,9,12),
                           multi = T),
+              htmlBr(),
               htmlH5("Wine Type"),
+              htmlBr(),
               dccRadioItems(id = "winetype",
                             options = list(
                               list("label" = "White Wines", "value" = "white"),
                               list("label" = "Red Wines", "value" = "red")
                             ),
-                            value="red"
+                            value="red", class = 'radioItem'
               ),
+              htmlBr(),
               htmlH5("Expected outcome"),
+              htmlBr(),
               htmlImg(
                 id = "treepng", src = "/assets/tree.png", width = "100%", height = "600px"
               )
-            ))
+            )), style=list(marginBottom = '15em')
           )
         )))))
 
@@ -761,6 +751,7 @@ learn_more_layout <- htmlDiv(
         Header_banner,
         htmlBr(),
         htmlDiv(
+          style=list(marginBottom = '8em'),
           id = "mhp-control-tabs",
           className = "control-tabs",
           children = list(
@@ -777,22 +768,8 @@ learn_more_layout <- htmlDiv(
                       htmlBr(),
                       htmlH4(
                         className = "what-is", 
-                        children = "What is Our Motivation?"
-                      ),
-                      htmlDiv(
-                        id = "app-page-header",
-                        children = list(
-                          htmlImg(
-                            src = "/assets/GitHub-Mark-64px.png",
-                            style = list(paddingLeft = "10px")
-                          ),
-                          htmlA(
-                            id = "gh-link",
-                            children = list("View on GitHub"),
-                            href = "https://github.com/ubco-mds-2020-labs/WineVision-R-group8",
-                            style = list(color = "grey", paddingLeft = "10px")
-                          )
-                        )
+                        children = "What is Our Motivation?",
+                        style=list(marginTop = '1em', marginBottom = '1em')
                       ),
                       htmlBr(),
                       htmlP("With 36 billion bottles of wine produced each year, 
@@ -810,10 +787,26 @@ learn_more_layout <- htmlDiv(
                             style = list(paddingLeft = "10px")
                       ),
                       htmlBr(),
+                      htmlDiv(
+                        id = "app-page-header",
+                        children = list(
+                          htmlImg(
+                            src = "/assets/GitHub-Mark-64px.png",
+                            style = list(paddingLeft = "10px", marginBottom = '2em', float = 'center') # float not working
+                          ),
+                          htmlA(
+                            id = "gh-link",
+                            children = list("View on GitHub"),
+                            href = "https://github.com/ubco-mds-2020-labs/WineVision-R-group8",
+                            style = list(color = "grey", paddingLeft = "10px", float = 'center') # float not working
+                          )
+                        )
+                      ),
                       htmlImg(
                         # https://www.heremagazine.com/articles/vinho-verde-is-the-new-rose/
                         src  =  "/assets/HereMag.png", width = "100%",
-                        className = "app__menu__img"
+                        className = "app__menu__img",
+                        style=list(marginTop = '1em')
                       )
                     )
                   )
@@ -827,7 +820,8 @@ learn_more_layout <- htmlDiv(
                       htmlBr(),
                       htmlH4(
                         className = "what-is2", 
-                        children = "What is Our Problem?"
+                        children = "What is Our Problem?",
+                        style=list(marginTop = '1em', marginBottom = '1em')
                       ),
                       htmlP("Wine making has always been a traditional practice passed down 
                                     for many generations; yet, some of wine's secrets are still a 
@@ -854,14 +848,21 @@ learn_more_layout <- htmlDiv(
                       htmlBr(),
                       htmlH4(
                         className = "what-is2", 
-                        children = "What is Our Solution?"
+                        children = "What is Our Solution?",
+                        style=list(marginTop = '1em', marginBottom = '1em')
                       ),
                       htmlP("Our interactive dashboard will allow users to explore how a number 
                                     of physicochemical variables interact and determine the subjective 
                                     quality of a wine. Wine producers, wine enthusiasts, and curious 
                                     individuals can all make use of this dashboard to discover these 
                                     elusive relationships.",
-                            style = list(paddingLeft = "10px")
+                            style = list(paddingLeft = "10px"),
+                      ),
+                      htmlImg(
+                        # https://www.heremagazine.com/articles/vinho-verde-is-the-new-rose/
+                        src  =  "/assets/HereMag.png", width = "100%",
+                        className = "app__menu__img",
+                        style=list(marginTop = '1em')
                       )
                     )
                   )
@@ -875,7 +876,8 @@ learn_more_layout <- htmlDiv(
                       htmlBr(),
                       htmlH4(
                         className = "what-is3", 
-                        children = "The Data We Are Using"
+                        children = "The Data We Are Using",
+                        style=list(marginTop = '1em', marginBottom = '1em')
                       ),
                       htmlP("Data was collected from Vinho Verde wines originating from the 
                                     northwest regions of Portugal. These wines have a medium alcohol 
@@ -903,13 +905,20 @@ learn_more_layout <- htmlDiv(
                       htmlBr(),
                       htmlH4(
                         className = "what-is3", 
-                        children = "Data Citation"
+                        children = "Data Citation",
+                        style=list(marginTop = '1em', marginBottom = '1em')
                       ),
                       htmlP("Paulo Cortez, University of Minho, Guimar�es, Portugal, 
                                     http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
                                     T. Matos and J. Reis, Viticulture Commission of the Vinho Verde 
                                     Region(CVRVV), Porto, Portugal @2009",
                             style = list(paddingLeft = "10px")
+                      ),
+                      htmlImg(
+                        # https://www.heremagazine.com/articles/vinho-verde-is-the-new-rose/
+                        src  =  "/assets/HereMag.png", width = "100%",
+                        className = "app__menu__img",
+                        style=list(marginTop = '1em')
                       )
                     )
                   )
