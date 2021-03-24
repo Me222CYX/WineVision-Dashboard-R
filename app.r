@@ -46,8 +46,8 @@ get_header <- function() {
             className = "seven columns main-title", style = list(marginTop = '1em', background = 'rgba(0,0,0,0)')),
           htmlDiv(
             list(
-              dccLink("Learn more",
-                      href = "/WineVision/learn-more",
+              dccLink("Introduction",
+                      href = "/WineVision/introduction",
                       className = "learn-more-button")),
             className = "twelve columns")
         ),
@@ -75,13 +75,13 @@ get_menu <- function() {
         href="/WineVision/Quality-Factors",
         className="tab"),
       dccLink(
-        "Prediction",
-        href = "/WineVision/Prediction",
-        className = "tab"),
-      dccLink(
         "Raw Data",
         href="/WineVision/Wine-table",
-        className="tab")
+        className="tab"),
+      dccLink(
+        "Future Additions (In Progress)",
+        href = "/WineVision/Prediction",
+        className = "tab")
     ),
     className="rowrow alltab "
   )
@@ -726,6 +726,8 @@ app$callback(
 ## PREDICTION
 ###############################
 
+
+#Future Additions
 prediction_layout <- htmlDiv(
   list(
     Header_banner,
@@ -735,7 +737,8 @@ prediction_layout <- htmlDiv(
         dbcContainer(
           dbcRow(
             dbcCol(list( # Variable selection
-              htmlH6("This page is a work in progress"),
+              dbcAlert("This page is a work in progress for future development", color="primary"),
+
               htmlH5("Physiochemical Properties"),
               dccDropdown(id = "variables",
                           options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
@@ -749,6 +752,7 @@ prediction_layout <- htmlDiv(
                             ),
                             value="red"
               ),
+              htmlH5("Expected outcome"),
               htmlImg(
                 id = "treepng", src = "/assets/tree.png", width = "100%", height = "600px"
               )
@@ -956,7 +960,7 @@ app$callback(output = list(id='page-content', property = 'children'),
                else if (pathname == "/WineVision/Wine-Types") {
                  return(Wine_Types_layout)
                }
-               else if (pathname == "/WineVision/learn-more") {
+               else if (pathname == "/WineVision/introduction") {
                  return(learn_more_layout)
                }
                else if (pathname == "/WineVision/Wine-table") {
