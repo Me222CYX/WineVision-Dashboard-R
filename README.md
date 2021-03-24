@@ -3,8 +3,6 @@
 
 *You can visit the app directly by clicking here* &darr; &darr; &darr; 
 
-[***Python Version***](https://wine-vision.herokuapp.com/)
-
 [***R Version***](https://winevisionr.herokuapp.com/)
 
 
