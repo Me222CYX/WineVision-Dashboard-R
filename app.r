@@ -953,7 +953,7 @@ app$callback(output = list(id='page-content', property = 'children'),
                  return(prediction_layout)
                }
                else {
-                 return(Wine_Types_layout)
+                 return(learn_more_layout)
                }
              }
 )
