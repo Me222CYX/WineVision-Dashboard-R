@@ -46,8 +46,8 @@ get_header <- function() {
             className = "seven columns main-title", style = list(marginTop = '1em', background = 'rgba(0,0,0,0)')),
           htmlDiv(
             list(
-              dccLink("Introduction",
-                      href = "/WineVision/introduction",
+              dccLink("Future Additions (WIP)",
+                      href = "/WineVision/Prediction",
                       className = "learn-more-button")),
             className = "twelve columns")
         ),
@@ -63,13 +63,17 @@ get_menu <- function() {
   menu = htmlDiv(
     list(
       dccLink(
+        "Introduction",
+        href="/WineVision/introduction",
+        className="tab first"),
+      dccLink(
         "Quality Distributions",
         href="/WineVision/Quality-Distributions",
         className="tab"),
       dccLink(
         "Correlation",
         href="/WineVision/Wine-Types",
-        className="tab first"),
+        className="tab"),
       dccLink(
         "Exploration",
         href="/WineVision/Quality-Factors",
@@ -77,11 +81,7 @@ get_menu <- function() {
       dccLink(
         "Raw Data",
         href="/WineVision/Wine-table",
-        className="tab"),
-      dccLink(
-        "Future Additions (In Progress)",
-        href = "/WineVision/Prediction",
-        className = "tab")
+        className="tab")
     ),
     className="rowrow alltab "
   )
@@ -981,6 +981,6 @@ app$callback(output = list(id='page-content', property = 'children'),
 #############################################
 
 
-app$run_server(host = '0.0.0.0') # 0.0.0.0 Needed for Heroku
+app$run_server(debug = T) # 0.0.0.0 Needed for Heroku
 
 #host = '0.0.0.0'
