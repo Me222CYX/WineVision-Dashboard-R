@@ -75,7 +75,7 @@ get_menu <- function() {
         href="/WineVision/Quality-Factors",
         className="tab"),
       dccLink(
-        "Prediciton",
+        "Prediction",
         href = "/WineVision/Prediction",
         className = "tab"),
       dccLink(
@@ -100,53 +100,8 @@ Menu <- htmlDiv(list(get_menu()))
 ## DATA
 #############################################
 
-df <- wine <- read.csv("data/processed/wine_quality.csv")
-# need an extra ID column for linking plots ~ Rain
-wine$id <- as.character(1:nrow(wine))
 
-
-# Eric's code - I like it and would like to use it on my page so it's here now ~ Luka :)
-variables <- colnames(wine) # Just rename all vars instead of some <--> subset(df, select = -c(Wine, Quality.Factor, Quality.Factor.Numeric)))
-
-variablesNoUnits <- gsub("\\.\\..*$","", variables) # Remove units
-variablesNoUnits <- gsub("\\."," ", variablesNoUnits) # Replace dots with spaces
-# IF THIS GENERATES A PARSE ERROR ANYWHERE, simply replace "varibale name with space" --> "`varibale name with space`"
-
-colnames(wine) <- variablesNoUnits
-# Units in order of variables
-units <- c(' ', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(g/dm^3)', '(mg/dm^3)', '(mg/dm^3)', '(g/cm^3)', ' ', '(g/dm^3)', '(%)', ' ', ' ', ' ')
-
-## Luka
-# I could probably put this in the wrangling file
-factors <- c(1, 13, 14, 15)
-wine[, -factors] <- as.numeric(unlist(wine[, -factors]))
-white <- wine[wine[,'Wine']=='white', ]
-red <- wine[wine[,'Wine']=='red', ]
-wine_type <- list('White' = white, 'Red' = red)
-
-
-mu_white <- ddply(white, "`Quality Factor`", numcolwise(mean))
-mu_red <- ddply(red, "`Quality Factor`",  numcolwise(mean))
-mu_type <- list(mu_white, mu_red)
-
-med_white <- ddply(white, "`Quality Factor`", numcolwise(median))
-med_red <- ddply(red, "`Quality Factor`",  numcolwise(median))
-med_type <- list(med_white, med_red)
-
-
-contmode <- function(vector) {
-  dens <- density(vector)
-  maxx = dens$x[which.max(dens$y)]
-  return(maxx)
-}
-
-mode_white <- ddply(white, "`Quality Factor`", numcolwise(contmode))
-mode_red <- ddply(red, "`Quality Factor`",  numcolwise(contmode))
-mode_type <- list(mode_white, mode_red)
-
-stats <- list('Mean'=mu_type, 'Median'=med_type, 'Mode'=mode_type)
-
-vars <- variable.names(wine)[-15] %>% as.vector()
+source("data/Data_Compiler (r).R")
 
 
 #############################################
@@ -828,6 +783,7 @@ learn_more_layout <- htmlDiv(
                   children = htmlDiv(
                     className = "control-tab",
                     children = list(
+                      htmlBr(),
                       htmlH4(
                         className = "what-is", 
                         children = "What is Our Motivation?"
@@ -836,27 +792,37 @@ learn_more_layout <- htmlDiv(
                         id = "app-page-header",
                         children = list(
                           htmlImg(
-                            src = "/assets/GitHub-Mark-64px.png"
+                            src = "/assets/GitHub-Mark-64px.png",
+                            style = list(paddingLeft = "10px")
                           ),
                           htmlA(
                             id = "gh-link",
                             children = list("View on GitHub"),
                             href = "https://github.com/ubco-mds-2020-labs/WineVision-R-group8",
-                            style = list(color = "grey")
+                            style = list(color = "grey", paddingLeft = "10px")
                           )
                         )
                       ),
+                      htmlBr(),
                       htmlP("With 36 billion bottles of wine produced each year, 
                                     wine makers are constantly looking for ways to outperform 
                                     the competition and create the best wines they can. Portugal 
                                     in particular is second in the world for per-capita wine 
                                     consumption and eleventh for wine production, creating over 
-                                    600,000 litres per year."
+                                    600,000 litres per year.",
+                            style = list(paddingLeft = "10px")
                       ),
                       htmlP("Given that physicochemical components 
                                     are fundamental to a wine's quality, those who understand this 
                                     aspect of wine will have a greater edge into crafting an enjoyable 
-                                    and profitable product."
+                                    and profitable product.",
+                            style = list(paddingLeft = "10px")
+                      ),
+                      htmlBr(),
+                      htmlImg(
+                        # https://www.heremagazine.com/articles/vinho-verde-is-the-new-rose/
+                        src  =  "/assets/HereMag.png", width = "100%",
+                        className = "app__menu__img"
                       )
                     )
                   )
@@ -867,6 +833,7 @@ learn_more_layout <- htmlDiv(
                   children = htmlDiv(
                     className = "control-tab",
                     children = list(
+                      htmlBr(),
                       htmlH4(
                         className = "what-is2", 
                         children = "What is Our Problem?"
@@ -875,22 +842,25 @@ learn_more_layout <- htmlDiv(
                                     for many generations; yet, some of wine's secrets are still a 
                                     mystery to most people, even wine producers! So how are we supposed 
                                     to craft the perfect wine without knowing what makes it perfect 
-                                    (speaking from both a consumer and business perspective)?"
+                                    (speaking from both a consumer and business perspective)?",
+                            style = list(paddingLeft = "10px")
                       ),
                       htmlP("In general, wine quality evaluation is assessed by physicochemical 
                                     tests and sensory analysis. It's the roadmap to improving a wine. 
                                     However the relationship between physicochemical structure and 
                                     subjective quality is complex and no individual component can be 
                                     used to accurately predict a wine's quality. The interactions are 
-                                    as important as the components themselves."
+                                    as important as the components themselves.",
+                            style = list(paddingLeft = "10px")
                       ),
                       htmlP("From a business perspective, producers are constantly looking for 
                                     ways to outperform the competition by creating the best wine they can.
                                     Those who understand the fundamental physiochemical aspects of wine 
                                     will have a greater edge into crafting an enjoyable and profitable 
-                                    product. So, we introduce to you the Wine Vision Dashboard."
+                                    product. So, we introduce to you the Wine Vision Dashboard.",
+                            style = list(paddingLeft = "10px")
                       ),
-                      
+                      htmlBr(),
                       htmlH4(
                         className = "what-is2", 
                         children = "What is Our Solution?"
@@ -899,7 +869,8 @@ learn_more_layout <- htmlDiv(
                                     of physicochemical variables interact and determine the subjective 
                                     quality of a wine. Wine producers, wine enthusiasts, and curious 
                                     individuals can all make use of this dashboard to discover these 
-                                    elusive relationships."
+                                    elusive relationships.",
+                            style = list(paddingLeft = "10px")
                       )
                     )
                   )
@@ -910,6 +881,7 @@ learn_more_layout <- htmlDiv(
                   children = htmlDiv(
                     className = "control-tab",
                     children = list(
+                      htmlBr(),
                       htmlH4(
                         className = "what-is3", 
                         children = "The Data We Are Using"
@@ -920,7 +892,8 @@ learn_more_layout <- htmlDiv(
                                     months. Each wine sample was evaluated by at least three sensory 
                                     assessors (using blind tastes) who graded the wine from 0 (worst) 
                                     to 10 (best). The final quality score is given by the median of 
-                                    these evaluations."
+                                    these evaluations.",
+                            style = list(paddingLeft = "10px")
                       ),
                       htmlP("The dataset consists of the physiochemical composition and sensory 
                                     test results for 4898 white and 1599 red wine samples which were 
@@ -933,23 +906,28 @@ learn_more_layout <- htmlDiv(
                                     In order to improve classification analyses, we define a new 
                                     variable, quality_factor. Any wine with a quality score less than 
                                     six is classified as below average, a score of 6 is average, 
-                                    and above 6 is above average."
+                                    and above 6 is above average.",
+                            style = list(paddingLeft = "10px")
                       ),
-                      
+                      htmlBr(),
                       htmlH4(
                         className = "what-is3", 
                         children = "Data Citation"
                       ),
+<<<<<<< HEAD
                       htmlP("Paulo Cortez, University of Minho, Guimar?es, Portugal, 
                                      http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
+=======
+                      htmlP("Paulo Cortez, University of Minho, Guimar�es, Portugal, 
+                                    http://www3.dsi.uminho.pt/pcortez A. Cerdeira, F. Almeida, 
+>>>>>>> ce85a3817bfdda3cabff815a16207bcf5dee4974
                                     T. Matos and J. Reis, Viticulture Commission of the Vinho Verde 
-                                    Region(CVRVV), Porto, Portugal @2009"
+                                    Region(CVRVV), Porto, Portugal @2009",
+                            style = list(paddingLeft = "10px")
                       )
                     )
                   )
                 )
-                
-                
               )
             )
           )
