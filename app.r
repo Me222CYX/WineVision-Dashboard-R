@@ -51,7 +51,7 @@ get_header <- function() {
             className = "seven columns main-title", style = list(marginTop = '1em', background = 'rgba(0,0,0,0)')),
           htmlDiv(
             list(
-              dccLink("Future Additions (WIP)",
+              dccLink("Machine Learning",
                       href = "/WineVision/Prediction",
                       className = "learn-more-button")),
             className = "twelve columns")
@@ -693,44 +693,80 @@ app$callback(
 )
 
 ###############################
-# Future Additions
+# Future Additions (Prediction )
 ###############################
 wine233 <- read.csv("data/raw/wine_quality.csv")
+
+tree_card<- dbcCard(
+  dbcCardBody(list(
+    htmlH4("Classification tree"),
+    dbcButton(
+      "How to use",
+      id="collapse-button",
+      className = "mb-3",
+      color = "primary"
+    ),
+    dbcCollapse(
+      id="tree-collapse",
+      is_open =TRUE,
+      dbcCard(dbcCardBody(
+        list(
+        htmlP("Interpretable machine learning!"),
+        htmlP("Select variables of interest, It will fit categorical classification trees to the data."),
+        htmlP("If no variables are selected, all variables will be considered as a default.")))
+    )
+  )
+  )
+))
+
+classification<-dbcCard(dbcCardBody(list(
+  
+  dbcCol(list( # Variable selection
+    htmlH5("Physiochemical Properties"),
+    dccDropdown(id = "variable-select",
+                options = colnames(wine233)[2:11] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine233)==col))),
+                value = c(3,9, 11),
+                multi = T),
+    htmlBr(),
+    htmlH5("Wine Type"),
+    dccRadioItems(id = "winetype",
+                  options = list(
+                    list("label" = "White Wines", "value" = "white"),
+                    list("label" = "Red Wines", "value" = "red")
+                  ),
+                  value="red"
+    ),
+    
+    htmlDiv(list(
+      dbcCol(dccGraph(id = "tree"),width = 20)
+    ))
+  )
+  
+  )
+  
+)
+  
+)
+  
+)
 prediction_layout<-htmlDiv(
   list(
     Header_banner,
-    dbcAlert("This feature is a work in progress for future development.", color="primary"),
-    dbcAlert("Idea: Interpretable machine learning!", color="primary"),
-    dbcAlert("Users will be able to select variables of interest, then fit categorical classification trees to the data. If no variables are selected, all variables will be considered as a default.", color="primary"),
     htmlBr(),
-
-    htmlDiv(
-      dbcContainer(
-        dbcRow(
-          dbcCol(list( # Variable selection
-            htmlH5("Physiochemical Properties"),
-            dccDropdown(id = "variable-select",
-                        options = colnames(wine233)[2:11] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine233)==col))),
-                        value = c(3,9, 11),
-                        multi = T),
-            htmlH5("Wine Type"),
-            dccRadioItems(id = "winetype",
-                          options = list(
-                            list("label" = "White Wines", "value" = "white"),
-                            list("label" = "Red Wines", "value" = "red")
-                          ),
-                          value="red"
-            ),
-
-            htmlDiv(list(dccGraph(id = "tree")))
-
-          ))
-        )
-      )
-    )
+    tree_card,
+    htmlBr(),
+    classification
   )
 )
 
+app$callback(
+  list(output("tree-collapse","is_open")),
+  params = list(input("collapse-button","n_clicks"),
+                state("tree-collapse","is_open")),
+  function (n_clicks,is_open){
+    return (list(!is_open))
+  }
+)
 
 
 app$callback(
@@ -752,20 +788,17 @@ app$callback(
     winex <- cbind(Quality.Factor, preds)
     # Create tree object using chosen predictors
 
-    wine.tree <- rpart(Quality.Factor~., data = winex)
+    wine.tree <- rpart(Quality.Factor~., data = winex,method = "class")
     fitr <- dendro_data(wine.tree)
     p<-ggplot()+
       geom_segment(data = fitr$segments,
                    aes(x = x, y = y, xend = xend, yend = yend)
       ) +
-      geom_text(data = fitr$labels, aes(x = x, y = y, label = label)) +
-      geom_text(data = fitr$leaf_labels, aes(x = x, y = y, label = label)) +
+      geom_text(data = fitr$labels, aes(x = x, y = y, label = label),size=4.5,vjust = 1) +
+      geom_text(data = fitr$leaf_labels, aes(x = x, y = y, label = label),size = 4, vjust = 1)+
       theme_dendro()
 
     plot <- ggplotly(p)
-    plot <- plot %>% layout(
-      paper_bgcolor = 'rgba(0,0,0,0)', plot_bgcolor = 'rgba(0,0,0,0)')
-
     plot
 
   }
@@ -773,44 +806,6 @@ app$callback(
 
 
 
-# prediction_layout <- htmlDiv(
-#   list(
-#     Header_banner,
-#     htmlDiv(
-#       list(
-#         htmlBr(),
-#         dbcContainer(
-#           dbcRow(
-#             dbcCol(list( # Variable selection
-#               dbcAlert("This feature is a work in progress for future development.", color="primary"),
-#               dbcAlert("Idea: Interpretable machine learning!", color="primary"),
-#               dbcAlert("Users will be able to select variables of interest, then fit categorical classification trees to the data. If no variables are selected, all variables will be considered as a default.", color="primary"),
-#               htmlBr(),
-#               htmlH5("Select Physicochemical Properties (optional)"),
-#               htmlBr(),
-#               dccDropdown(id = "variables",
-#                           options = colnames(wine)[2:12] %>% purrr::map(function(col) list(label = col, value = which(colnames(wine)==col))),
-#                           value = c(3,9,12),
-#                           multi = T),
-#               htmlBr(),
-#               htmlH5("Wine Type"),
-#               htmlBr(),
-#               dccRadioItems(id = "winetype",
-#                             options = list(
-#                               list("label" = "White Wines", "value" = "white"),
-#                               list("label" = "Red Wines", "value" = "red")
-#                             ),
-#                             value="red", class = 'radioItem'
-#               ),
-#               htmlBr(),
-#               htmlH5("Expected outcome"),
-#               htmlBr(),
-#               htmlImg(
-#                 id = "treepng", src = "/assets/tree.png", width = "100%", height = "600px"
-#               )
-#             )), style=list(marginBottom = '15em')
-#           )
-#         )))))
 
 
 ################################
