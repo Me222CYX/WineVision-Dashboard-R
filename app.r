@@ -27,8 +27,11 @@ library(glue)
 #############################################
 
 #app <- Dash$new(external_stylesheets = "https://codepen.io/chriddyp/pen/bWLwgP.css")
+
 app = Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
-#app <- Dash$new()
+
+app$title(string = "Wine Vision")
+
 app$config['suppress_callback_exceptions'] = TRUE
 
 
@@ -730,6 +733,7 @@ prediction_layout <- htmlDiv(
             )), style=list(marginBottom = '15em')
           )
         )))))
+
 
 ################################
 ## Introduction
