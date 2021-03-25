@@ -794,8 +794,8 @@ app$callback(
       geom_segment(data = fitr$segments,
                    aes(x = x, y = y, xend = xend, yend = yend)
       ) +
-      geom_text(data = fitr$labels, aes(x = x, y = y, label = label),size=4.5,vjust = 1) +
-      geom_text(data = fitr$leaf_labels, aes(x = x, y = y, label = label),size = 4, vjust = 1)+
+      geom_text(data = fitr$labels, aes(x = x, y = y+0.004, label = label),size=4.5) +
+      geom_text(data = fitr$leaf_labels, aes(x = x+0.05, y = y-0.009, label = label),size = 4)+
       theme_dendro()
 
     plot <- ggplotly(p)
