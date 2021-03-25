@@ -1,6 +1,6 @@
 ### Reflection - Milestone 4
 
-This week we added additional pages to our dashboard, tidied our “learn more” page, and improved general styling and app layout to make it more professional.
+This week we added additional pages to our dashboard, tidied our “Introduction” page, and improved general styling and app layout to make it more professional.
 
 We began work on a Prediction tab for machine learning visualization but were unable to get it production ready. As such, we put the contents into a “future additions” page in order to give users an idea of the direction this dashboard could take in the future. We realized that this feature would require many techniques not covered in class and not easily solved on the internet. In particular, getting plots to show on the dashboard which are generated from packages other than plotly and ggplot proved to be not only difficult, but near impossible as far as we could tell (unless we use static PNG images). Thus, our idea was to try and generate a PNG or html image for each possible graph and then embed these into the dashboard. We couldn’t figure out a way to update the images using callbacks, not to mention that it’s still not the ideal approach to ML visualizations, and decided it would be best to devote our time to other aspects of the dashboard.
 
