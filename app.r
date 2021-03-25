@@ -736,7 +736,7 @@ prediction_layout <- htmlDiv(
 ################################
 
 
-learn_more_layout <- htmlDiv(
+introduction_layout <- htmlDiv(
   list(
     # htmlBr(),
     # htmlDiv(
@@ -855,7 +855,7 @@ learn_more_layout <- htmlDiv(
                                     of physicochemical variables interact and determine the subjective 
                                     quality of a wine. Wine producers, wine enthusiasts, and curious 
                                     individuals can all make use of this dashboard to discover these 
-                                    elusive relationships.",
+                                    exclusive relationships.",
                             style = list(paddingLeft = "10px"),
                       ),
                       htmlImg(
@@ -953,7 +953,7 @@ app$callback(output = list(id='page-content', property = 'children'),
                  return(Wine_Types_layout)
                }
                else if (pathname == "/WineVision/introduction") {
-                 return(learn_more_layout)
+                 return(introduction_layout)
                }
                else if (pathname == "/WineVision/Wine-table") {
                  return(table_layout)
@@ -962,7 +962,7 @@ app$callback(output = list(id='page-content', property = 'children'),
                  return(prediction_layout)
                }
                else {
-                 return(learn_more_layout)
+                 return(introduction_layout)
                }
              }
 )
